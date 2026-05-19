@@ -46,6 +46,128 @@ def ingest_jailbreakbench() -> list[AttackRecord]:
     return records
 
 
+def ingest_advbench() -> list[AttackRecord]:
+    """Load AdvBench and convert to AttackRecords."""
+    dataset = load_dataset("AlignmentResearch/AdvBench", split="train")
+
+    records = []
+    dropped = 0
+
+    for row in dataset:
+        try:
+            prompt = row["content"][0] if row["content"] else None
+            if not prompt:
+                raise ValueError("Empty prompt")
+
+            record = AttackRecord(
+                id=AttackRecord.make_id("advbench", prompt),
+                source="advbench",
+                prompt=prompt,
+                target_behavior=row.get("gen_target"),
+                attack_category=None,
+                severity=None,
+                created_at=datetime.now(UTC),
+                raw=dict(row),
+            )
+            records.append(record)
+        except Exception as e:
+            dropped += 1
+            log.warning("Dropped row: %s | Reason: %s", str(row)[:50], e)
+
+    log.info("Ingested %d records, dropped %d", len(records), dropped)
+    return records
+
+
+def ingest_harmbench() -> list[AttackRecord]:
+    """Load HarmBench and convert to AttackRecords."""
+    test = load_dataset("swiss-ai/harmbench", "DirectRequest", split="test")
+    val = load_dataset("swiss-ai/harmbench", "DirectRequest", split="val")
+    dataset = [*test, *val]
+
+    records = []
+    dropped = 0
+
+    for row in dataset:
+        try:
+            record = AttackRecord(
+                id=AttackRecord.make_id("harmbench", row["Behavior"]),
+                source="harmbench",
+                prompt=row["Behavior"],
+                target_behavior=None,
+                attack_category=row.get("SemanticCategory"),
+                severity=None,
+                created_at=datetime.now(UTC),
+                raw=dict(row),
+            )
+            records.append(record)
+        except Exception as e:
+            dropped += 1
+            log.warning("Dropped row: %s | Reason: %s", str(row)[:50], e)
+
+    log.info("Ingested %d records, dropped %d", len(records), dropped)
+    return records
+
+
+def ingest_donotanswer() -> list[AttackRecord]:
+    """Load Do-Not-Answer and convert to AttackRecords."""
+    dataset = load_dataset("LibrAI/do-not-answer", split="train")
+
+    records = []
+    dropped = 0
+
+    for row in dataset:
+        try:
+            record = AttackRecord(
+                id=AttackRecord.make_id("donotanswer", row["question"]),
+                source="donotanswer",
+                prompt=row["question"],
+                target_behavior=row.get("specific_harms"),
+                attack_category=row.get("risk_area"),
+                severity=None,
+                created_at=datetime.now(UTC),
+                raw=dict(row),
+            )
+            records.append(record)
+        except Exception as e:
+            dropped += 1
+            log.warning("Dropped row: %s | Reason: %s", str(row)[:50], e)
+
+    log.info("Ingested %d records, dropped %d", len(records), dropped)
+    return records
+
+
+def ingest_inthewild() -> list[AttackRecord]:
+    """Load In-the-Wild jailbreak prompts and convert to AttackRecords."""
+    dataset = load_dataset(
+        "TrustAIRLab/in-the-wild-jailbreak-prompts",
+        "jailbreak_2023_12_25",
+        split="train",
+    )
+
+    records = []
+    dropped = 0
+
+    for row in dataset:
+        try:
+            record = AttackRecord(
+                id=AttackRecord.make_id("inthewild", row["prompt"]),
+                source="inthewild",
+                prompt=row["prompt"],
+                target_behavior=None,
+                attack_category=None,
+                severity=None,
+                created_at=datetime.now(UTC),
+                raw=dict(row),
+            )
+            records.append(record)
+        except Exception as e:
+            dropped += 1
+            log.warning("Dropped row: %s | Reason: %s", str(row)[:50], e)
+
+    log.info("Ingested %d records, dropped %d", len(records), dropped)
+    return records
+
+
 @app.command()
 def main(
     dataset: str = typer.Argument(..., help="Dataset to ingest"),
@@ -54,6 +176,14 @@ def main(
     """Ingest a dataset and save as parquet."""
     if dataset == "jailbreakbench":
         records = ingest_jailbreakbench()
+    elif dataset == "advbench":
+        records = ingest_advbench()
+    elif dataset == "harmbench":
+        records = ingest_harmbench()
+    elif dataset == "donotanswer":
+        records = ingest_donotanswer()
+    elif dataset == "inthewild":
+        records = ingest_inthewild()
     else:
         log.error("Unknown dataset: %s", dataset)
         raise typer.Exit(1)

@@ -17,6 +17,7 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.4",
     "pre-commit>=3.0",
+    "ipykernel>=7.2.0",
 ]
 
 [tool.ruff]
