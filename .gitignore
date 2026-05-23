@@ -10,3 +10,4 @@ wheels/
 .venv
 data/processed/*.parquet
 data/embeddings/*.npy
+data/plots/
