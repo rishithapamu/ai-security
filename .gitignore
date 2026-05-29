@@ -19,3 +19,7 @@ data/processed/*.parquet
 notebooks/temp.ipynb
 ai-sec-workbench/
 notebooks/demos/.ipynb_checkpoints/
+.DS_Store
+data/**/*.parquet
+data/**/*.csv
+.ipynb_checkpoints/
