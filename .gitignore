@@ -11,3 +11,10 @@ wheels/
 data/processed/*.parquet
 data/embeddings/*.npy
 data/plots/
+
+.DS_Store
+notebooks/.ipynb_checkpoints/
+*.csv
+data/processed/*.parquet
+notebooks/temp.ipynb
+ai-sec-workbench/
