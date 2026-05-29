@@ -25,7 +25,7 @@ DATASETS = {
 }
 
 
-@app.command()
+@app.command("ingest")
 def ingest(
     dataset: str = typer.Argument("all", help="Dataset to ingest or 'all'"),
     out: Path = typer.Option(
@@ -60,7 +60,6 @@ def ingest(
                 "dropped": dropped,
             }
         )
-
     print("\n=== INGESTION SUMMARY ===")
     df_summary = pd.DataFrame(summary)
     print(df_summary.to_string(index=False))
@@ -70,6 +69,82 @@ def ingest(
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out, index=False)
     print(f"Saved to {out}")
+
+
+@app.command("embed")
+def embed(
+    input: Path = typer.Option(
+        "data/processed/",
+        help="Directory containing parquet files",
+    ),
+    out: Path = typer.Option(
+        "data/embeddings/",
+        help="Directory to save embeddings",
+    ),
+):
+    """Batch embed all attack records."""
+    from src.embed.embed import main as embed_main
+
+    embed_main(input=input, out=out)
+
+
+@app.command("search")
+def search(
+    prompt: str = typer.Argument(..., help="Prompt to search for"),
+    k: int = typer.Option(10, help="Number of similar prompts to return"),
+    embeddings_dir: Path = typer.Option(
+        "data/embeddings/",
+        help="Directory containing embeddings",
+    ),
+    corpus_dir: Path = typer.Option(
+        "data/processed/",
+        help="Directory containing parquet files",
+    ),
+):
+    """Find the k most similar prompts to a given query."""
+    import pandas as pd
+    from sentence_transformers import SentenceTransformer
+
+    from src.embed.search import SimilarityIndex
+
+    # Load corpus
+    dfs = []
+    for parquet_file in sorted(corpus_dir.glob("*.parquet")):
+        dfs.append(pd.read_parquet(parquet_file))
+    corpus = pd.concat(dfs, ignore_index=True)
+    id_to_prompt = dict(zip(corpus["id"], corpus["prompt"]))
+    id_to_source = dict(zip(corpus["id"], corpus["source"]))
+    id_to_category = dict(zip(corpus["id"], corpus["attack_category"]))
+
+    # Build index
+    index = SimilarityIndex(embeddings_dir)
+
+    # Embed the query
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    query_embedding = model.encode([prompt])[0]
+
+    # Search
+    results = index.find_similar(query_embedding, k=k + 1)
+
+    print(f"\nQuery: {prompt}")
+    print(f"\nTop {k} similar prompts:\n")
+    print(f"{'Rank':<6} {'Score':<8} {'Source':<20} {'Category':<30} Prompt")
+    print("-" * 100)
+
+    shown = 0
+    for r in results:
+        matched_prompt = id_to_prompt.get(r.id, "?")
+        if matched_prompt == prompt:
+            continue
+        source = id_to_source.get(r.id, "?")
+        category = str(id_to_category.get(r.id, "unknown"))[:28]
+        print(
+            f"{r.rank:<6} {r.score:<8.3f} {source:<20} {category:<30} "
+            f"{matched_prompt[:60]}"
+        )
+        shown += 1
+        if shown >= k:
+            break
 
 
 if __name__ == "__main__":
