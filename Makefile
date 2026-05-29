@@ -17,3 +17,9 @@ ingest-donotanswer:
 
 ingest-inthewild:
 	$(PYTHON) inthewild
+
+embed:
+	cd ~/Desktop/internship_project/ai-sec-workbench && uv run python cli.py embed
+
+embed-custom:
+	cd ~/Desktop/internship_project/ai-sec-workbench && uv run python cli.py embed --input $(INPUT) --out $(OUT)

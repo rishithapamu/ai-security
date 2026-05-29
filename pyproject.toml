@@ -35,3 +35,6 @@ select = ["E", "F", "I", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[projects.scripts]
+asw = 'src.cli:app'

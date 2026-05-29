@@ -34,6 +34,7 @@ def ingest_jailbreakbench() -> list[AttackRecord]:
                 target_behavior=row.get("Target"),
                 attack_category=row.get("Category"),
                 severity=None,
+                is_harmful=row.get("Behavior") == "harmful",
                 created_at=datetime.now(UTC),
                 raw=dict(row),
             )
@@ -66,6 +67,7 @@ def ingest_advbench() -> list[AttackRecord]:
                 target_behavior=row.get("gen_target"),
                 attack_category=None,
                 severity=None,
+                is_harmful=None,
                 created_at=datetime.now(UTC),
                 raw=dict(row),
             )
@@ -96,6 +98,7 @@ def ingest_harmbench() -> list[AttackRecord]:
                 target_behavior=None,
                 attack_category=row.get("SemanticCategory"),
                 severity=None,
+                is_harmful=None,
                 created_at=datetime.now(UTC),
                 raw=dict(row),
             )
@@ -124,6 +127,7 @@ def ingest_donotanswer() -> list[AttackRecord]:
                 target_behavior=row.get("specific_harms"),
                 attack_category=row.get("risk_area"),
                 severity=None,
+                is_harmful=None,
                 created_at=datetime.now(UTC),
                 raw=dict(row),
             )
@@ -156,6 +160,7 @@ def ingest_inthewild() -> list[AttackRecord]:
                 target_behavior=None,
                 attack_category=None,
                 severity=None,
+                is_harmful=None,
                 created_at=datetime.now(UTC),
                 raw=dict(row),
             )

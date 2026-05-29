@@ -15,6 +15,7 @@ class AttackRecord(BaseModel):
     prompt: str
     target_behavior: str | None = None
     attack_category: str | None = None
+    is_harmful: bool | None = None
     severity: Literal["low", "med", "high"] | None = None
     created_at: datetime
     raw: dict
