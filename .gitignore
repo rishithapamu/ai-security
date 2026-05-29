@@ -18,3 +18,4 @@ notebooks/.ipynb_checkpoints/
 data/processed/*.parquet
 notebooks/temp.ipynb
 ai-sec-workbench/
+notebooks/demos/.ipynb_checkpoints/
