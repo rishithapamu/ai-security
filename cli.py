@@ -29,7 +29,7 @@ DATASETS = {
 def ingest(
     dataset: str = typer.Argument("all", help="Dataset to ingest or 'all'"),
     out: Path = typer.Option(
-        "/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench/data/processed/combined.parquet",
+        "data/processed/combined.parquet",
         help="Output parquet path",
     ),
 ):
