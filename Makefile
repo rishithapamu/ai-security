@@ -35,3 +35,15 @@ visualize:
 		--embeddings data/embeddings/ \
 		--out data/plots/umap.html
 		open data/plots/umap.html
+
+cluster:
+	uv run python src/cluster/cluster.py \
+		--input data/embeddings/ \
+		--embeddings data/embeddings/ \
+		--out data/clusters/
+
+tune:
+	uv run python src/cluster/tune.py \
+		--input data/processed/ \
+		--embeddings data/embeddings/ \
+		--out data/clusters/tuning_results.csv

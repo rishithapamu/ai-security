@@ -16,11 +16,10 @@ app = typer.Typer()
 
 
 def load_corpus(input_dir: Path) -> pd.DataFrame:
-    """Load all parquet files into one DataFrame."""
-    dfs = []
-    for parquet_file in sorted(input_dir.glob("*.parquet")):
-        dfs.append(pd.read_parquet(parquet_file))
-    corpus = pd.concat(dfs, ignore_index=True)
+    """Load corpus from combined parquet file."""
+    corpus = pd.read_parquet(
+        "/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench/data/processed/combined.parquet"
+    )
     log.info("Loaded corpus: %d records", len(corpus))
     return corpus
 
