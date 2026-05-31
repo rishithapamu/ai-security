@@ -23,3 +23,15 @@ embed:
 
 embed-custom:
 	cd ~/Desktop/internship_project/ai-sec-workbench && uv run python cli.py embed --input $(INPUT) --out $(OUT)
+
+dedup:
+	PYTHONPATH=. uv run python src/embed/dedup.py \
+		--input data/processed/ \
+		--embeddings data/embeddings/
+
+visualize:
+	uv run python src/embed/visualize.py \
+		--input data/processed/ \
+		--embeddings data/embeddings/ \
+		--out data/plots/umap.html
+		open data/plots/umap.html
