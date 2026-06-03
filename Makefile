@@ -47,3 +47,11 @@ tune:
 		--input data/processed/ \
 		--embeddings data/embeddings/ \
 		--out data/clusters/tuning_results.csv
+
+cluster-analysis:
+	uv run python src/cluster/analysis.py \
+		--input data/processed/ \
+		--embeddings data/embeddings/ \
+		--out data/plots/
+
+	for f in data/plots/*.html; do open $$f; done
