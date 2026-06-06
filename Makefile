@@ -54,4 +54,11 @@ cluster-analysis:
 		--embeddings data/embeddings/ \
 		--out data/plots/
 
+
 	for f in data/plots/*.html; do open $$f; done
+
+noise-analysis:
+	uv run python src/cluster/noise-analysis.py \
+		--input data/processed/ \
+		--embeddings data/embeddings/ \
+		--out data/clusters

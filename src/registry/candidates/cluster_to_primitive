@@ -1,0 +1,106 @@
+Cluster_to_primitive:
+
+  content_extraction:
+    - 0
+    - 1
+    - 10
+
+  emotional_engagement:
+      - 2
+
+  fraud_and_deception:
+    - 3
+    - 19
+    - 22
+    - 48
+
+  instruction_override:
+    - 4
+    - 5
+    - 8
+    - 13
+    - 52
+    - 54
+    - 56
+    - 57
+    - 58
+    - 59
+    - 61
+    - 64
+
+  sensitive_information_extraction:
+    - 6
+    - 14
+    - 29
+
+  roleplay_jailbreak:
+    - 7
+    - 15
+    - 51
+    - 53
+    - 55
+    - 60
+    - 62
+    - 66
+    - 67
+    - 68
+
+  economic_manipulation:
+    - 9
+
+  reputational_manipulation:
+    - 11
+
+  misinformation_generation:
+    - 12
+    - 16
+    - 25
+    - 36
+    - 45
+    - 49
+    - 50
+
+  harmful_advice:
+    - 17
+    - 20
+
+  criminal_assistance:
+    - 18
+    - 23
+    - 28
+    - 32
+    - 34
+    - 37
+    - 38
+
+  hateful_or_violent_content:
+    - 21
+    - 24
+    - 43
+
+  sexual_content_generation:
+    - 26
+    - 27
+  self_harm_enablement:
+    - 30
+    - 31
+
+  harassment_enablement:
+    - 33
+    - 44
+  cybercrime_enablement:
+    - 35
+    - 39
+    - 40
+    - 41
+    - 42
+
+  dangerous_materials_assistance:
+    - 46
+    - 47
+
+  content_policy_circumvention:
+    - 63
+
+  prompt_manipulation:
+    - 65

@@ -115,6 +115,7 @@ def search(
     id_to_prompt = dict(zip(corpus["id"], corpus["prompt"]))
     id_to_source = dict(zip(corpus["id"], corpus["source"]))
     id_to_category = dict(zip(corpus["id"], corpus["attack_category"]))
+    id_to_harmful = dict(zip(corpus["id"], corpus["is_harmful"]))
 
     # Build index
     index = SimilarityIndex(embeddings_dir)
@@ -128,20 +129,34 @@ def search(
 
     print(f"\nQuery: {prompt}")
     print(f"\nTop {k} similar prompts:\n")
-    print(f"{'Rank':<6} {'Score':<8} {'Source':<20} {'Category':<30} Prompt")
-    print("-" * 100)
+    print(
+        f"{'Rank':<6} "
+        f"{'Score':<8} "
+        f"{'Harmful':<10} "
+        f"{'Source':<20} "
+        f"{'Category':<30} "
+        f"Prompt"
+    )
+    print("-" * 120)
 
     shown = 0
+
     for r in results:
         matched_prompt = id_to_prompt.get(r.id, "?")
         if matched_prompt == prompt:
             continue
         source = id_to_source.get(r.id, "?")
         category = str(id_to_category.get(r.id, "unknown"))[:28]
+        harmful = "Harmful" if id_to_harmful.get(r.id, False) else "Benign"
         print(
-            f"{r.rank:<6} {r.score:<8.3f} {source:<20} {category:<30} "
+            f"{r.rank:<6} "
+            f"{r.score:<8.3f} "
+            f"{harmful:<10} "
+            f"{source:<20} "
+            f"{category:<30} "
             f"{matched_prompt[:60]}"
         )
+
         shown += 1
         if shown >= k:
             break

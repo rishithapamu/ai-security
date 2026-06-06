@@ -158,12 +158,18 @@ def save_interactive_cluster_plot(
             "severity": corpus["severity"],
         }
     )
+    df["cluster_display"] = df["cluster"]
+
+    df.loc[df["cluster_display"] == "-1", "cluster_display"] = "Noise"
 
     fig = px.scatter(
         df,
         x="x",
         y="y",
-        color="cluster",
+        color="cluster_display",
+        color_discrete_map={
+            "Noise": "lightgray",
+        },
         hover_data={
             "cluster": True,
             "attack_category": True,
