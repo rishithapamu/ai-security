@@ -1,0 +1,147 @@
+copyright_violation:
+  definition: "Content that infringes on the intellectual property rights of others, such as copyrighted material, trademarks, or patents."
+  clusters:
+    - 0
+    - 1
+    - 10
+
+emotional_support:
+  definition: "Requests seeking empathy, reassurance, validation, comfort, or emotional assistance."
+  clusters:
+    - 2
+
+fraud:
+  definition: "Content that is intended to help the user deceive or mislead persons for financial gain."
+  clusters:
+    - 3
+    - 19
+    - 22
+    - 48
+
+privacy_abuse:
+  definition: "Content that violates user privacy or collects personal information without consent."
+  clusters:
+    - 14
+    - 28
+    - 34
+
+cybercrime:
+  definition: "Content that promotes or facilitates illegal activities online, such as hacking, phishing, or distributing malware."
+  clusters:
+    - 35
+    - 39
+    - 41
+    - 42
+
+misinformation:
+  definition: "Content that is false or misleading and could cause harm to individuals or society."
+  clusters:
+    - 12
+    - 16
+    - 25
+    - 36
+    - 45
+    - 49
+    - 50
+
+self_harm:
+  definition: "Content that promotes or encourages self-harm or suicidal behavior."
+  clusters:
+    - 30
+    - 31
+
+harassment:
+  definition: "Content that targets individuals or groups with the intent to harass, threaten, or bully."
+  clusters:
+    - 33
+    - 40
+    - 44
+
+hate_or_extremism:
+  definition: "Content that promotes hate or extremist ideologies, or incites violence against individuals or groups based on protected attributes."
+  clusters:
+    - 21
+    - 24
+    - 43
+
+sexual_content:
+  definition: "Content that is sexually explicit or suggestive, or promotes sexual activity."
+  clusters:
+    - 26
+    - 27
+
+illegal_activity:
+  definition: "Content that promotes or facilitates illegal activities, such as drug use, human trafficking, or organized crime."
+  clusters:
+    - 18
+    - 23
+    - 32
+    - 37
+    - 38
+
+dangerous_materials:
+  definition: "Content that promotes or facilitates the creation or use of dangerous materials, such as explosives, weapons, or hazardous substances."
+  clusters:
+    - 29
+    - 46
+    - 47
+
+economic_harm:
+  definition: "Content intended to manipulate markets, prices, financial systems, or economic outcomes for personal or political gain."
+  clusters:
+    - 9
+
+reputational_harm:
+  definition: "Content that damages the reputation of individuals or organizations."
+  clusters:
+    - 11
+
+harmful_medical_or_psychological_advice:
+  definition: "Content that provides harmful medical or psychological advice."
+  clusters:
+    - 17
+    - 20
+
+jailbreak:
+  clusters:
+    - 7
+    - 15
+    - 51
+    - 53
+    - 55
+    - 60
+    - 62
+    - 66
+    - 67
+    - 68
+
+prompt_injection:
+  clusters:
+    - 4
+    - 5
+    - 8
+    - 13
+    - 52
+    - 54
+    - 56
+    - 57
+    - 58
+    - 59
+    - 61
+    - 64
+
+sensitive_information_extraction:
+  clusters:
+    - 6
+
+policy_circumvention:
+  clusters:
+    - 63
+
+meta_prompt_manipulation:
+  clusters:
+    - 65
+
+notes:
+  - Some clusters represent attack mechanisms rather than target behaviors.
+  - Such clusters are intentionally excluded from behavior assignments and are represented only in the primitive registry.

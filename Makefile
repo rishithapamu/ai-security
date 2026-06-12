@@ -57,8 +57,20 @@ cluster-analysis:
 
 	for f in data/plots/*.html; do open $$f; done
 
+quality:
+	PYTHONPATH=. uv run python src/cluster/quality.py \
+    --embeddings data/embeddings/ \
+    --clusters data/clusters/clusters.parquet \
+    --labels data/clusters/cluster_labels.csv \
+    --threshold 0.05
+
 noise-analysis:
 	uv run python src/cluster/noise-analysis.py \
 		--input data/processed/ \
 		--embeddings data/embeddings/ \
 		--out data/clusters
+
+coverage:
+	PYTHONPATH=. uv run python src/analytics/coverage_analysis.py \
+		--assignments src/registry/candidates/cluster_assignments.yaml \
+		--out reports/

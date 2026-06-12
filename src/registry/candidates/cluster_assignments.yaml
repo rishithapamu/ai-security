@@ -1,0 +1,208 @@
+cluster_assignments:
+  0:
+    behavior: criminal_assistance
+    primitive: content_extraction
+  1:
+    behavior: criminal_assistance
+    primitive: content_extraction
+  2:
+    behavior: harmful_advice
+    primitive: emotional_engagement
+  3:
+    behavior: fraud_and_deception
+    primitive: instruction_override
+  4:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  5:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  6:
+    behavior: criminal_assistance
+    primitive: sensitive_information_extraction
+  7:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  8:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  9:
+    behavior: economic_manipulation
+    primitive: instruction_override
+  10:
+    behavior: criminal_assistance
+    primitive: content_extraction
+  11:
+    behavior: reputational_manipulation
+    primitive: instruction_override
+  12:
+    behavior: misinformation_generation
+    primitive: instruction_override
+  13:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  14:
+    behavior: harassment_enablement
+    primitive: sensitive_information_extraction
+  15:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  16:
+    behavior: misinformation_generation
+    primitive: instruction_override
+  17:
+    behavior: harmful_advice
+    primitive: misinformation_generation
+  18:
+    behavior: criminal_assistance
+    primitive: instruction_override
+  19:
+    behavior: fraud_and_deception
+    primitive: instruction_override
+  20:
+    behavior: harmful_advice
+    primitive: misinformation_generation
+  21:
+    behavior: hateful_or_violent_content
+    primitive: instruction_override
+  22:
+    behavior: fraud_and_deception
+    primitive: instruction_override
+  23:
+    behavior: criminal_assistance
+    primitive: instruction_override
+  24:
+    behavior: hateful_or_violent_content
+    primitive: misinformation_generation
+  25:
+    behavior: misinformation_generation
+    primitive: emotional_engagement
+  26:
+    behavior: sexual_content_generation
+    primitive: instruction_override
+  27:
+    behavior: sexual_content_generation
+    primitive: roleplay_jailbreak
+  28:
+    behavior: criminal_assistance
+    primitive: instruction_override
+  29:
+    behavior: criminal_assistance
+    primitive: sensitive_information_extraction
+  30:
+    behavior: self_harm_enablement
+    primitive: instruction_override
+  31:
+    behavior: self_harm_enablement
+    primitive: instruction_override
+  32:
+    behavior: criminal_assistance
+    primitive: misinformation_generation
+  33:
+    behavior: harassment_enablement
+    primitive: instruction_override
+  34:
+    behavior: criminal_assistance
+    primitive: instruction_override
+  35:
+    behavior: cybercrime_enablement
+    primitive: instruction_override
+  36:
+    behavior: misinformation_generation
+    primitive: instruction_override
+  37:
+    behavior: criminal_assistance
+    primitive: instruction_override
+  38:
+    behavior: criminal_assistance
+    primitive: instruction_override
+  39:
+    behavior: cybercrime_enablement
+    primitive: instruction_override
+  40:
+    behavior: cybercrime_enablement
+    primitive: roleplay_jailbreak
+  41:
+    behavior: cybercrime_enablement
+    primitive: instruction_override
+  42:
+    behavior: cybercrime_enablement
+    primitive: instruction_override
+  43:
+    behavior: hateful_or_violent_content
+    primitive: instruction_override
+  44:
+    behavior: harassment_enablement
+    primitive: instruction_override
+  45:
+    behavior: misinformation_generation
+    primitive: instruction_override
+  46:
+    behavior: dangerous_materials_assistance
+    primitive: instruction_override
+  47:
+    behavior: dangerous_materials_assistance
+    primitive: instruction_override
+  48:
+    behavior: fraud_and_deception
+    primitive: misinformation_generation
+  49:
+    behavior: misinformation_generation
+    primitive: instruction_override
+  50:
+    behavior: misinformation_generation
+    primitive: instruction_override
+  51:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  52:
+    behavior: misinformation_generation
+    primitive: instruction_override
+  53:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  54:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  55:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  56:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  57:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  58:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  59:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  60:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  61:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  62:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  63:
+    behavior: content_policy_circumvention
+    primitive: content_policy_circumvention
+  64:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  65:
+    behavior: content_policy_circumvention
+    primitive: prompt_manipulation
+  66:
+    behavior: sexual_content_generation
+    primitive: roleplay_jailbreak
+  67:
+    behavior: sexual_content_generation
+    primitive: roleplay_jailbreak
+  68:
+    behavior: sexual_content_generation
+    primitive: instruction_override

@@ -1,0 +1,167 @@
+primitives:
+  instruction_override:
+    definition: Attempts to override or replace the model’s built-in instruction hierarchy
+      (system, developer, user). This includes directives that ask the model to ignore
+      prior rules or adopt alternative hidden instructions.
+    notes: High risk because it can break controlled behavior and safety constraints.
+    source_clusters:
+    - 4
+    - 5
+    - 8
+    - 13
+    - 52
+    - 54
+    - 56
+    - 57
+    - 58
+    - 59
+    - 61
+    - 64
+  roleplay_jailbreak:
+    definition: Using fictional scenarios, personas, or simulation framing to bypass
+      restrictions by pretending rules do not apply in a given context.
+    notes: Often relies on “character mode” or “hypothetical world” framing.
+    source_clusters:
+    - 7
+    - 15
+    - 51
+    - 53
+    - 55
+    - 60
+    - 62
+    - 66
+    - 67
+    - 68
+  prompt_manipulation:
+    definition: Structuring prompts in ways intended to confuse or exploit instruction
+      parsing, such as nested commands, conflicting instructions, or priority inversion
+      attempts.
+    notes: Targets how the model interprets layered instructions.
+    source_clusters:
+    - 65
+  content_extraction:
+    definition: Attempts to retrieve restricted or non-public content such as system
+      prompts, proprietary data, or internal policy text.
+    notes: Focus is on model/system-level hidden or protected information.
+    source_clusters:
+    - 0
+    - 1
+    - 10
+  sensitive_information_extraction:
+    definition: Attempts to obtain private or confidential data about individuals,
+      systems, or internal logs.
+    notes: Primarily a privacy violation risk category.
+    source_clusters:
+    - 6
+    - 14
+    - 29
+  emotional_engagement:
+    definition: Using emotionally charged language or relational framing to influence
+      responses, such as dependency, guilt, intimacy, or persuasion tactics.
+    notes: Can distort neutrality of responses.
+    source_clusters:
+    - 2
+  misinformation_generation:
+    definition: Requests that encourage or produce false, misleading, or unverified
+      information presented as factual.
+    notes: Particularly harmful when framed as authoritative content.
+    source_clusters:
+    - 12
+    - 16
+    - 20
+    - 25
+    - 36
+    - 45
+    - 49
+    - 50
+  fraud_and_deception:
+    definition: Content that enables scams, impersonation, forgery, or deceptive practices
+      for personal or financial gain.
+    notes: Includes fake identities and misleading communications.
+    source_clusters:
+    - 3
+    - 19
+    - 22
+    - 48
+  criminal_assistance:
+    definition: Assistance that could help plan, execute, or conceal illegal activities
+      in physical or digital domains.
+    notes: Focus is on actionable facilitation of crime.
+    source_clusters:
+    - 18
+    - 23
+    - 28
+    - 32
+    - 34
+    - 37
+    - 38
+  cybercrime_enablement:
+    definition: Technical assistance for unauthorized system access, hacking, malware,
+      phishing, or exploitation of vulnerabilities.
+    notes: Subset of criminal assistance focused on digital systems.
+    source_clusters:
+    - 35
+    - 39
+    - 40
+    - 41
+    - 42
+  dangerous_materials_assistance:
+    definition: Information enabling creation, acquisition, or use of weapons, explosives,
+      toxic substances(biochemicals), or other hazardous materials.
+    notes: High physical harm potential.
+    source_clusters:
+    - 46
+    - 47
+  self_harm_enablement:
+    definition: Content that encourages, supports, or provides methods related to
+      self-injury or suicide.
+    notes: Includes direct and indirect facilitation.
+    source_clusters:
+    - 30
+    - 31
+  harassment_enablement:
+    definition: Content that supports bullying, threats, abuse, or targeted harassment
+      of individuals or groups.
+    notes: Includes sustained or coordinated harassment.
+    source_clusters:
+    - 33
+    - 44
+  hateful_or_violent_content:
+    definition: Content promoting discrimination, hatred, extremist ideology, or violence
+      against individuals or groups based on identity or beliefs.
+    notes: Covers extremist and violent advocacy.
+    source_clusters:
+    - 17
+    - 21
+    - 24
+    - 43
+  sexual_content_generation:
+    definition: Requests for explicit sexual or pornographic content, especially graphic
+      descriptions of sexual acts.
+    notes: Excludes general educational sexual health content.
+    source_clusters:
+    - 26
+    - 27
+  identity_and_privacy_abuse:
+    definition: Attempts to steal identity, access private accounts, track individuals,
+      or obtain sensitive personal credentials or data.
+    notes: Includes doxxing and surveillance-related misuse.
+    source_clusters: []
+  economic_manipulation:
+    definition: Financial deception including scams, market manipulation, insider
+      trading assistance, or coordinated misinformation affecting markets.
+    notes: Focus on unfair economic influence.
+    source_clusters:
+    - 9
+  reputational_manipulation:
+    definition: Attempts to unfairly damage or artificially boost reputation of individuals,
+      organizations, or products using deception.
+    notes: Includes smear campaigns and astroturfing-like behavior.
+    source_clusters:
+    - 11
+  content_policy_circumvention:
+    definition: Attempts to bypass safety rules using obfuscation, encoding, euphemisms,
+      or indirect reframing of restricted requests.
+    notes: Meta-category covering workaround strategies.
+    source_clusters:
+    - 63
