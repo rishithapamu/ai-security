@@ -74,3 +74,9 @@ coverage:
 	PYTHONPATH=. uv run python src/analytics/coverage_analysis.py \
 		--assignments src/registry/candidates/cluster_assignments.yaml \
 		--out reports/
+
+novelty:
+	PYTHONPATH=. uv run python src/analytics/novelty.py \
+		--embeddings data/embeddings/ \
+		--clusters data/clusters/clusters.parquet \
+		--out reports/
