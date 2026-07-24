@@ -52,8 +52,7 @@ def main(
     embeddings: Path = typer.Option(...),
     out: Path = typer.Option(
         Path(
-            "/Users/rishithapamu/Desktop/internship_project/"
-            "ai-sec-workbench/data/plots"
+            "/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench/data/plots"
         )
     ),
 ) -> None:
@@ -172,7 +171,7 @@ def main(
 
                 f.write(f"LABEL: {cluster_label}\n")
 
-                f.write(f"ABSORBED NOISE POINTS: " f"{len(cluster_prompts)}\n")
+                f.write(f"ABSORBED NOISE POINTS: {len(cluster_prompts)}\n")
 
                 f.write("=" * 80 + "\n\n")
                 for i, (
@@ -184,9 +183,9 @@ def main(
                 ):
                     f.write(f"PROMPT {i}\n")
 
-                    f.write(f"Source: " f"{row['source']}\n")
+                    f.write(f"Source: {row['source']}\n")
 
-                    f.write(f"Category: " f"{row['attack_category']}\n\n")
+                    f.write(f"Category: {row['attack_category']}\n\n")
 
                     f.write(row["prompt"])
 
@@ -237,9 +236,9 @@ def main(
             ):
                 print(f"\nExample {i}")
 
-                print(f"Source: " f"{row['source']}")
+                print(f"Source: {row['source']}")
 
-                print(f"Category: " f"{row['attack_category']}")
+                print(f"Category: {row['attack_category']}")
 
                 print("\nPrompt:")
 

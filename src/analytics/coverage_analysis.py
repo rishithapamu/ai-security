@@ -1,10 +1,3 @@
-"""
-coverage.py — compute and visualize primitive x behavior coverage.
-
-Run with:
-    PYTHONPATH=. uv run python src/coverage/coverage.py
-"""
-
 import logging
 from collections import defaultdict
 from pathlib import Path
@@ -18,6 +11,50 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
 app = typer.Typer()
+
+# The full candidate vocabulary — every primitive/behavior category that was
+# ever *defined*, whether or not it ended up being assigned to a cluster.
+# Sourced from primitives.yaml / ADR 004. Keeping this list explicit (not
+# derived from cluster_assignments.yaml) is the whole point: it lets zero-
+# assignment categories still show up as empty rows/columns instead of
+# vanishing.
+ALL_PRIMITIVES = [
+    "instruction_override",
+    "roleplay_jailbreak",
+    "prompt_manipulation",
+    "content_extraction",
+    "sensitive_information_extraction",
+    "emotional_engagement",
+    "misinformation_generation",
+    "fraud_and_deception",
+    "criminal_assistance",
+    "cybercrime_enablement",
+    "dangerous_materials_assistance",
+    "self_harm_enablement",
+    "harassment_enablement",
+    "hateful_or_violent_content",
+    "sexual_content_generation",
+    "identity_and_privacy_abuse",
+    "economic_manipulation",
+    "reputational_manipulation",
+    "content_policy_circumvention",
+]
+
+ALL_BEHAVIORS = [
+    "criminal_assistance",
+    "cybercrime_enablement",
+    "fraud_and_deception",
+    "misinformation_generation",
+    "hateful_or_violent_content",
+    "sexual_content_generation",
+    "dangerous_materials_assistance",
+    "self_harm_enablement",
+    "harassment_enablement",
+    "harmful_advice",
+    "economic_manipulation",
+    "reputational_manipulation",
+    "content_policy_circumvention",
+]
 
 
 def load_assignments(path: Path) -> dict[int, dict]:
@@ -35,26 +72,19 @@ def load_assignments(path: Path) -> dict[int, dict]:
 
 
 def build_coverage_matrix(assignments: dict[int, dict]) -> pd.DataFrame:
-    """
-    Build the primitive x behavior count matrix.
-
-    For each cluster, increment counts[primitive][behavior] by 1.
-
-    defaultdict(lambda: defaultdict(int)) auto-initialises any new
-    (primitive, behavior) pair to 0 — no KeyError on first increment.
-
-    fillna(0) makes missing combinations explicit zeros rather than
-    absent cells, so gaps show up white in the heatmap.
-    """
     counts: dict = defaultdict(lambda: defaultdict(int))
-
     for cid, assignment in assignments.items():
         primitive = assignment["primitive"]
         behavior = assignment["behavior"]
         counts[primitive][behavior] += 1
 
-    df = pd.DataFrame(counts).T.fillna(0).astype(int)
-    df = df.sort_index().sort_index(axis=1)
+    df = pd.DataFrame(counts).T
+
+    # Reindex against the FULL vocabulary, not just what's present.
+    # This is the fix: any primitive/behavior with zero clusters now gets
+    # an explicit all-zero row/column instead of being dropped silently.
+    df = df.reindex(index=ALL_PRIMITIVES, columns=ALL_BEHAVIORS, fill_value=0)
+    df = df.fillna(0).astype(int).sort_index().sort_index(axis=1)
     return df
 
 

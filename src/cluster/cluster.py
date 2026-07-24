@@ -1,5 +1,3 @@
-"""Clustering pipeline — group attack records by behavioral similarity."""
-
 import logging
 from pathlib import Path
 
@@ -16,18 +14,22 @@ app = typer.Typer()
 
 
 def load_corpus(input_dir: Path) -> pd.DataFrame:
-    """Load corpus from combined parquet file."""
-    corpus = pd.read_parquet(
-        "/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench/data/processed/combined.parquet"
-    )
-    log.info("Loaded corpus: %d records", len(corpus))
+    combined = input_dir / "combined.parquet"
+    if not combined.exists():
+        raise FileNotFoundError(
+            f"Expected {combined} — run `uv run python cli.py ingest` first."
+        )
+    corpus = pd.read_parquet(combined)
+    log.info("Loaded %d records from %s", len(corpus), combined)
     return corpus
 
 
-def reduce_dimensions(embeddings: np.ndarray, n_components: int = 5) -> np.ndarray:
-    """Reduce embeddings to lower dimensions for clustering."""
+def reduce_dimensions(
+    embeddings: np.ndarray,
+    n_components: int = 5,
+) -> np.ndarray:
     log.info(
-        "Reducing %d dimensions to %d with UMAP...",
+        "Reducing %d dimensions → %d with UMAP…",
         embeddings.shape[1],
         n_components,
     )
@@ -47,9 +49,8 @@ def run_hdbscan(
     min_cluster_size: int = 15,
     min_samples: int = 5,
 ) -> np.ndarray:
-    """Run HDBSCAN clustering."""
     log.info(
-        "Running HDBSCAN (min_cluster_size=%d, min_samples=%d)...",
+        "Running HDBSCAN (min_cluster_size=%d, min_samples=%d)…",
         min_cluster_size,
         min_samples,
     )
@@ -58,52 +59,66 @@ def run_hdbscan(
         min_samples=min_samples,
         metric="euclidean",
     )
-    labels = clusterer.fit_predict(embeddings)
-    return labels
+    return clusterer.fit_predict(embeddings)
 
 
 def summarize_clusters(labels: np.ndarray, corpus: pd.DataFrame) -> None:
-    """Print cluster summary statistics."""
     n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
     n_noise = (labels == -1).sum()
     noise_rate = n_noise / len(labels) * 100
 
-    log.info("=== CLUSTERING RESULTS ===")
-    log.info("Total points: %d", len(labels))
-    log.info("Number of clusters: %d", n_clusters)
-    log.info("Noise points: %d (%.1f%%)", n_noise, noise_rate)
+    log.info("Clusters: %d | Noise: %d (%.1f%%)", n_clusters, n_noise, noise_rate)
 
     if noise_rate > 50:
-        log.warning("Noise rate > 50%% — parameters may be too strict")
+        log.warning("Noise rate > 50%% — parameters may be too strict.")
 
-    log.info("\n=== CLUSTER BREAKDOWN ===")
-    corpus = corpus.copy()
-    corpus["cluster"] = labels
+    # Temporary view for groupby — corpus is NOT modified
+    temp = corpus.assign(cluster=pd.Series(labels, index=corpus.index))
 
     for cluster_id in sorted(set(labels)):
         if cluster_id == -1:
             continue
-        cluster_df = corpus[corpus["cluster"] == cluster_id]
+        rows = temp[temp["cluster"] == cluster_id]
         top_category = (
-            cluster_df["attack_category"].value_counts().index[0]
-            if cluster_df["attack_category"].notna().any()
+            rows["attack_category"].value_counts().index[0]
+            if rows["attack_category"].notna().any()
             else "unknown"
         )
         log.info(
-            "Cluster %d: %d points | top category: %s",
-            cluster_id,
-            len(cluster_df),
-            top_category,
+            "Cluster %d: %d prompts | top: %s", cluster_id, len(rows), top_category
         )
-        for prompt in cluster_df["prompt"].head(3):
+        for prompt in rows["prompt"].head(3):
             log.info("  - %s", prompt[:80])
+
+
+def align_embeddings(
+    corpus: pd.DataFrame,
+    emb: np.ndarray,
+    ids: list[str],
+) -> tuple[pd.DataFrame, np.ndarray]:
+    id_index_df = pd.DataFrame({"id": ids, "_emb_idx": range(len(ids))})
+    merged = corpus.merge(id_index_df, on="id", how="inner")
+
+    n_dropped = len(corpus) - len(merged)
+    if n_dropped > 0:
+        log.warning(
+            "%d corpus rows have no embedding and will be excluded. "
+            "Re-run `cli.py embed` if this is unexpected.",
+            n_dropped,
+        )
+
+    aligned_corpus = merged.drop(columns=["_emb_idx"]).reset_index(drop=True)
+    aligned_emb = emb[merged["_emb_idx"].values]
+
+    log.info("Aligned %d records with embeddings.", len(aligned_corpus))
+    return aligned_corpus, aligned_emb
 
 
 @app.command()
 def main(
     input: Path = typer.Option(..., help="Directory containing parquet files"),
     embeddings: Path = typer.Option(..., help="Directory containing embeddings"),
-    out: Path = typer.Option(..., help="Output directory for cluster results"),
+    out: Path = typer.Option(..., help="Output directory"),
     min_cluster_size: int = typer.Option(15, help="HDBSCAN min_cluster_size"),
     min_samples: int = typer.Option(5, help="HDBSCAN min_samples"),
 ) -> None:
@@ -112,34 +127,25 @@ def main(
 
     corpus = load_corpus(input)
 
-    # Load embeddings and align with corpus
     emb = np.load(embeddings / "embeddings.npy").astype("float32")
     ids = np.load(embeddings / "ids.npy", allow_pickle=True).tolist()
 
-    id_to_idx = {id_: i for i, id_ in enumerate(ids)}
-    aligned_indices = [
-        id_to_idx[row["id"]] for _, row in corpus.iterrows() if row["id"] in id_to_idx
-    ]
-    aligned_emb = emb[aligned_indices]
-    aligned_corpus = corpus[corpus["id"].isin(set(ids))].reset_index(drop=True)
+    # BEFORE: alignment logic was 5 lines of inline code here in main()
+    # AFTER: named function — main() reads as a clean pipeline description
+    aligned_corpus, aligned_emb = align_embeddings(corpus, emb, ids)
 
-    log.info("Aligned %d records with embeddings", len(aligned_corpus))
-
-    # Reduce dimensions
     reduced = reduce_dimensions(aligned_emb)
-
-    # Cluster
     labels = run_hdbscan(reduced, min_cluster_size, min_samples)
 
-    # Summarize
     summarize_clusters(labels, aligned_corpus)
 
-    # Save results
     aligned_corpus["cluster"] = labels
+    output_path = out / "clusters.parquet"
     aligned_corpus[["id", "source", "prompt", "attack_category", "cluster"]].to_parquet(
-        out / "clusters.parquet", index=False
+        output_path,
+        index=False,
     )
-    log.info("Saved cluster results to %s", out / "clusters.parquet")
+    log.info("Saved → %s", output_path)
 
 
 if __name__ == "__main__":

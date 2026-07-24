@@ -231,8 +231,7 @@ def main(
     ),
     out: Path = typer.Option(
         Path(
-            "/Users/rishithapamu/Desktop/internship_project/"
-            "ai-sec-workbench/data/plots"
+            "/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench/data/plots"
         ),
         help="Output directory",
     ),

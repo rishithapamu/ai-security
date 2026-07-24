@@ -1,0 +1,11 @@
+[theme]
+# Dark background — deep navy, not pure black (pure black is harsh on eyes)
+backgroundColor         = "#0F1117"
+# Sidebar and card backgrounds — slightly lighter than the page
+secondaryBackgroundColor = "#1A1D2E"
+# All body text
+textColor               = "#E2E8F0"
+# Primary accent — pastel blue (used by Streamlit on buttons, sliders, etc.)
+primaryColor            = "#93C5FD"
+# Font — inter is clean and modern, falls back to sans-serif
+font                    = "sans serif"

@@ -80,3 +80,6 @@ novelty:
 		--embeddings data/embeddings/ \
 		--clusters data/clusters/clusters.parquet \
 		--out reports/
+
+test_cluster:
+	uv run pytest tests/test_cluster.py -v
