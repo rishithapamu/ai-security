@@ -19,14 +19,20 @@ IDS_FILE = "ids.npy"
 
 
 def load_corpus(input_dir: Path) -> pd.DataFrame:
-    """Load all parquet files from input directory into one DataFrame."""
-    dfs = []
-    for parquet_file in sorted(input_dir.glob("*.parquet")):
-        df = pd.read_parquet(parquet_file)
-        dfs.append(df)
-        log.info("Loaded %d records from %s", len(df), parquet_file.name)
-    corpus = pd.concat(dfs, ignore_index=True)
-    log.info("Total corpus: %d records", len(corpus))
+    """Load the combined corpus only."""
+    corpus_path = input_dir / "combined.parquet"
+
+    if not corpus_path.exists():
+        raise FileNotFoundError(f"Expected {corpus_path}")
+
+    corpus = pd.read_parquet(corpus_path)
+
+    log.info(
+        "Loaded %d records from %s",
+        len(corpus),
+        corpus_path.name,
+    )
+
     return corpus
 
 

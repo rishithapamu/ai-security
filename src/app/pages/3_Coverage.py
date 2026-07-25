@@ -116,14 +116,23 @@ fig.update_layout(
     font=dict(color="#E2E8F0", family="Inter, sans-serif"),
 )
 
-event = st.plotly_chart(fig, width="stretch", on_select="rerun", key="coverage_heatmap")
+event = st.plotly_chart(
+    fig,
+    use_container_width=True,
+    on_select="rerun",
+    key="coverage_heatmap",
+)
 
-if event and event.get("selection", {}).get("points"):
-    clicked = event["selection"]["points"][0]
-    cb, cp = clicked.get("x"), clicked.get("y")
-    if cb and cp:
-        st.session_state["coverage_selection"] = (cp, cb)
-
+if event is not None:
+    points = event.selection.points
+    if points:
+        point = points[0]
+        primitive = point["y"]
+        behavior = point["x"]
+        st.session_state["coverage_selection"] = (
+            primitive,
+            behavior,
+        )
 # ── Drill-down ────────────────────────────────────────────────────────────────
 st.divider()
 selection: tuple[str, str] | None = st.session_state.get("coverage_selection")

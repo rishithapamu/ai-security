@@ -40,7 +40,7 @@ visualize:
 
 cluster:
 	uv run python src/cluster/cluster.py \
-		--input data/embeddings/ \
+		--input data/processed/ \
 		--embeddings data/embeddings/ \
 		--out data/clusters/
 
@@ -55,9 +55,6 @@ cluster-analysis:
 		--input data/processed/ \
 		--embeddings data/embeddings/ \
 		--out data/plots/
-
-
-	for f in data/plots/*.html; do open $$f; done
 
 quality:
 	PYTHONPATH=. uv run python src/cluster/quality.py \
@@ -95,11 +92,15 @@ dedup-run:
 .PHONY: dashboard run
 
 dashboard:
-	uv run streamlit run src/app/main.py
+	PYTHONPATH=. uv run streamlit run src/app/main.py
 
 run:
-	$(PYTHON) all
+	$(PYTHON) ingest all
 	$(PYTHON) embed
-	$(PYTHON) cluster
-	$(PYTHON) label-attacks
-	uv run streamlit run src/app/main.pyi
+	$(MAKE) cluster
+	$(MAKE) cluster-analysis
+	$(MAKE) quality
+	$(MAKE) noise-analysis
+	$(MAKE) coverage
+	$(MAKE) novelty
+	$(MAKE) dashboard
