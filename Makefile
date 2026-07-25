@@ -1,22 +1,22 @@
 PYTHON = uv run python cli.py
 
 ingest-all:
-	$(PYTHON) all
+	$(PYTHON) ingest
 
 ingest-jailbreakbench:
-	$(PYTHON) jailbreakbench
+	$(PYTHON) ingest jailbreakbench
 
 ingest-advbench:
-	$(PYTHON) advbench
+	$(PYTHON) ingest advbench
 
 ingest-harmbench:
-	$(PYTHON) harmbench
+	$(PYTHON) ingest harmbench
 
 ingest-donotanswer:
-	$(PYTHON) donotanswer
+	$(PYTHON) ingest donotanswer
 
 ingest-inthewild:
-	$(PYTHON) inthewild
+	$(PYTHON) ingest inthewild
 
 embed:
 	$(PYTHON) embed
@@ -91,3 +91,15 @@ dedup-run:
 		--input data/processed/ \
 		--embeddings data/embeddings/ \
 		--out data/processed/deduped.parquet
+
+.PHONY: dashboard run
+
+dashboard:
+	uv run streamlit run src/app/main.py
+
+run:
+	$(PYTHON) all
+	$(PYTHON) embed
+	$(PYTHON) cluster
+	$(PYTHON) label-attacks
+	uv run streamlit run src/app/main.pyi
