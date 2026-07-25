@@ -22,12 +22,14 @@ EPSILONS = [0.00, 0.05, 0.10, 0.20, 0.30, 0.50]
 
 def load_corpus(input_dir: Path) -> pd.DataFrame:
     """Load corpus from combined parquet file."""
-    corpus = pd.read_parquet(
-        "/Users/rishithapamu/Desktop/internship_project/"
-        "ai-sec-workbench/data/processed/combined.parquet"
-    )
+    combined = input_dir / "combined.parquet"
 
-    log.info("Loaded corpus: %d records", len(corpus))
+    if not combined.exists():
+        raise FileNotFoundError(f"Expected {combined} — run ingest first.")
+
+    corpus = pd.read_parquet(combined)
+
+    log.info("Loaded corpus: %d records from %s", len(corpus), combined)
     return corpus
 
 
