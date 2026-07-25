@@ -64,8 +64,8 @@ def load_index():
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.markdown(
-    "<div style="
-    '"font-size:1.8rem;font-weight:800;color:#E2E8F0;margin-bottom:0.25rem;">'
+    '<div style="font-size:1.8rem; font-weight:800;color:#E2E8F0;'
+    'margin-bottom:0.25rem;">'
     "🔎 Semantic Search</div>"
     '<div style="font-size:13px;color:#64748B;margin-bottom:1.5rem;">'
     "SentenceTransformer all-MiniLM-L6-v2 + FAISS IndexFlatIP · cosine similarity"

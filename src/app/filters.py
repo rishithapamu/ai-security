@@ -221,8 +221,8 @@ def prompt_card(
         bar_colour = (
             "#86EFAC" if score >= 0.85 else "#FCD34D" if score >= 0.70 else "#64748B"
         )
-        rank_html = f"""
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        rank_html = f""" <div style="display:flex;
+            align-items:center; gap:10px;margin-bottom:8px;">
             <span style="background:#16192A;border:1px solid #2E3250;color:#E2E8F0;
                          width:26px;height:26px;border-radius:50%;display:inline-flex;
                          align-items:center;justify-content:center;font-size:11px;
@@ -254,11 +254,10 @@ def prompt_card(
     if behavior:
         badges += f" {badge(behavior, 'green')}"
 
-    return f"""
-    <div class="prompt-card">
-        {rank_html}
-        <div class="badge-row">{badges}</div>
-        <div class="prompt-text">{prompt_escaped}</div>
+    return f""" <div class="prompt-card">
+    {rank_html}
+    <div class="badge-row">{badges}</div>
+    <div class="prompt-text">{prompt_escaped}</div>
     </div>"""
 
 
