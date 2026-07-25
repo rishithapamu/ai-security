@@ -1,4 +1,4 @@
-PYTHON = cd ~/Desktop/internship_project/ai-sec-workbench && uv run python cli.py
+PYTHON = uv run python cli.py
 
 ingest-all:
 	$(PYTHON) all
@@ -19,10 +19,12 @@ ingest-inthewild:
 	$(PYTHON) inthewild
 
 embed:
-	cd ~/Desktop/internship_project/ai-sec-workbench && uv run python cli.py embed
+	$(PYTHON) embed
 
 embed-custom:
-	cd ~/Desktop/internship_project/ai-sec-workbench && uv run python cli.py embed --input $(INPUT) --out $(OUT)
+	$(PYTHON) embed \
+		--input $(INPUT) \
+		--out $(OUT)
 
 dedup:
 	PYTHONPATH=. uv run python src/embed/dedup.py \
@@ -83,3 +85,9 @@ novelty:
 
 test_cluster:
 	uv run pytest tests/test_cluster.py -v
+
+dedup-run:
+	PYTHONPATH=. uv run python src/embed/dedup_merge.py \
+		--input data/processed/ \
+		--embeddings data/embeddings/ \
+		--out data/processed/deduped.parquet
