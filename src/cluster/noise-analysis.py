@@ -51,11 +51,7 @@ def build_umap_embeddings(
 def main(
     input: Path = typer.Option(...),
     embeddings: Path = typer.Option(...),
-    out: Path = typer.Option(
-        Path(
-            "/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench/data/plots"
-        )
-    ),
+    out: Path = typer.Option(...),
 ) -> None:
     """Analyze noise points absorbed into clusters."""
 

@@ -1,7 +1,4 @@
-import sys
 from pathlib import Path
-
-sys.path.append("/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench")
 
 import pandas as pd
 import typer

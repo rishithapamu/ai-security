@@ -232,9 +232,7 @@ def main(
         help="Directory containing embeddings",
     ),
     out: Path = typer.Option(
-        Path(
-            "/Users/rishithapamu/Desktop/internship_project/ai-sec-workbench/data/plots"
-        ),
+        ...,
         help="Output directory",
     ),
 ) -> None:
