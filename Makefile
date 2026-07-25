@@ -60,7 +60,7 @@ quality:
 	PYTHONPATH=. uv run python src/cluster/quality.py \
     --embeddings data/embeddings/ \
     --clusters data/clusters/clusters.parquet \
-    --labels data/clusters/cluster_labels.csv \
+    --labels data/clusters/cluster_labels.yaml \
     --threshold 0.05
 
 noise-analysis:

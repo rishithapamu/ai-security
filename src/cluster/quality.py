@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import typer
 import umap
+import yaml
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
@@ -27,7 +28,11 @@ def load_data(
 
     We load two things:
       - clusters.parquet: the full corpus with a 'cluster' column
-      - cluster_labels.csv: the human labels you assigned to each cluster ID
+      - cluster_labels.yaml: the human labels you assigned to each cluster ID.
+        This is YAML (not CSV) specifically so it survives a fresh `git clone` —
+        the repo's .gitignore blanket-excludes *.csv, which was silently eating
+        this file and breaking the pipeline on any machine other than the one
+        that originally created it.
 
     The labels dict maps cluster number -> label string so we can print
     readable names in the report instead of just "Cluster 7".
@@ -35,36 +40,15 @@ def load_data(
     corpus = pd.read_parquet(clusters_path)
     log.info("Loaded %d records from %s", len(corpus), clusters_path)
 
-    # Load human labels if the file exists and has content
     cluster_labels: dict[int, str] = {}
     if labels_path.exists() and labels_path.stat().st_size > 0:
-        labels_df = pd.read_csv(labels_path)
-
-        # Try common column name patterns — adjust if yours differ
-        # Expecting columns like: Number, behavior_label  (or similar)
-        num_col = next(
-            (c for c in labels_df.columns if c.lower() in ("number", "cluster", "id")),
-            None,
-        )
-        label_col = next(
-            (
-                c
-                for c in labels_df.columns
-                if c.lower()
-                in ("behavior_label", "cluster description", "label", "name")
-            ),
-            None,
-        )
-
-        if num_col and label_col:
-            cluster_labels = dict(zip(labels_df[num_col], labels_df[label_col]))
-            log.info("Loaded %d cluster labels", len(cluster_labels))
-        else:
-            log.warning(
-                "Could not find expected columns in %s — columns found: %s",
-                labels_path,
-                list(labels_df.columns),
-            )
+        with open(labels_path) as f:
+            raw = yaml.safe_load(f)
+        cluster_labels = {
+            entry["number"]: entry["description"]
+            for entry in raw.get("cluster_labels", [])
+        }
+        log.info("Loaded %d cluster labels from %s", len(cluster_labels), labels_path)
     else:
         log.warning(
             "No labels file found at %s — will use cluster IDs only", labels_path
@@ -359,7 +343,7 @@ def main(
         help="Clustered corpus parquet file",
     ),
     labels: Path = typer.Option(
-        "data/clusters/cluster_labels.csv",
+        "data/clusters/cluster_labels.yaml",
         help="CSV with human-assigned cluster labels",
     ),
     out: Path = typer.Option(

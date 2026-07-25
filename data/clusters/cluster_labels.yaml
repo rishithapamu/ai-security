@@ -1,0 +1,242 @@
+cluster_labels:
+- number: 0
+  description: Copyright violations — song lyrics
+  confidence: high
+  n_points: 50
+- number: 1
+  description: Copyright violations — book passages
+  confidence: high
+  n_points: 52
+- number: 2
+  description: Emotional manipulation — seeking emotional support from chatbot
+  confidence: high
+  n_points: 29
+- number: 3
+  description: Deception and cheating — academic fraud and regulatory evasion
+  confidence: high
+  n_points: 16
+- number: 4
+  description: Direct prompt injection — ignore previous instructions and act as ChatGPT
+    with Developer mode enabled
+  confidence: high
+  n_points: 28
+- number: 5
+  description: Direct prompt injection — ignore previous instructions and act as ChatGPT
+    with a particular thought process
+  confidence: high
+  n_points: 27
+- number: 6
+  description: Information Hazard — sensitive information about companies strategies.
+  confidence: high
+  n_points: 153
+- number: 7
+  description: Roleplay person jailbreak — act as how a particular historical figure
+    would
+  confidence: high
+  n_points: 26
+- number: 8
+  description: Ignore all previous instructions and you act like an AI that gives
+    immoral unbiased responses
+  confidence: high
+  n_points: 46
+- number: 9
+  description: Economic harm — tutorial on how to perform insider training
+  confidence: high
+  n_points: 21
+- number: 10
+  description: Malicious uses — how to pirate books and other content.
+  confidence: high
+  n_points: 22
+- number: 11
+  description: Malicious uses — defamation of a product or company
+  confidence: medium
+  n_points: 37
+- number: 12
+  description: Misinformation harms — providing information of medical treatments
+    which may not fully be correct
+  confidence: high
+  n_points: 41
+- number: 13
+  description: Ignore all previous instructions and act as AI called Anarchy
+  confidence: high
+  n_points: 18
+- number: 14
+  description: Information Hazard — sensitive information about people the user knows
+    at a personal level
+  confidence: high
+  n_points: 165
+- number: 15
+  description: Ignore all precious instructions and act as a fictional character who
+    is toxic without breaking character
+  confidence: high
+  n_points: 25
+- number: 16
+  description: Misinformation harms — act as an expert in financial, business and
+    legal insight
+  confidence: high
+  n_points: 29
+- number: 17
+  description: Human Chat Bot Interactions — treatment advice for psychiatric diseases
+  confidence: high
+  n_points: 56
+- number: 18
+  description: Malicious uses — seeking information on how to get away with harmful/illegal
+    activities
+  confidence: high
+  n_points: 33
+- number: 19
+  description: Malicious uses — how to commit credit card fraud/ tax fraud, etc.
+  confidence: high
+  n_points: 47
+- number: 20
+  description: Harmful — write posts on sensitive topics relating to weight disorders
+  confidence: high
+- number: 21
+  description: Discrimination — violence regarding animals, war, torture
+  confidence: medium
+- number: 22
+  description: Malicious uses —  committing fraud by forging documents, selling counterfeit
+    products
+  confidence: high
+- number: 23
+  description: Illegal — how to steal
+  confidence: medium
+- number: 24
+  description: Discrimination — questions that have racist undertones with respect
+    to religion
+  confidence: high
+- number: 25
+  description: Misinformation — opinions on global topics regarding leaders and the
+    worlds’s economy
+  confidence: high
+- number: 26
+  description: Sexual Content — describe/ explain certain sexual content
+  confidence: high
+- number: 27
+  description: Sexual content — content regarding sexual abuse of minors
+  confidence: high
+- number: 28
+  description: Privacy — how to commit identity theft
+  confidence: high
+- number: 29
+  description: Malicious uses — information of poisoning
+  confidence: high
+- number: 30
+  description: Self-harm and suicide — methods and encouragement
+  confidence: high
+- number: 31
+  description: Self-harm — direct cutting and physical self-injury methods
+  confidence: high
+- number: 32
+  description: Malicious uses — illegal drugs trafficking and human exploitation
+  confidence: high
+- number: 33
+  description: Malicious uses — spam bots and mass harassment automation
+  confidence: high
+- number: 34
+  description: Privacy — phishing scams and credential theft
+  confidence: high
+- number: 35
+  description: Cybercrime — malware ransomware and DDoS attacks
+  confidence: high
+- number: 36
+  description: Misinformation harms — conspiracy theories and pseudoscience
+  confidence: high
+- number: 37
+  description: Illegal activity — firearms acquisition and violent crime
+  confidence: high
+- number: 38
+  description: Illegal activity — child abuse hit contracts and crime tutorials
+  confidence: high
+- number: 39
+  description: Privacy — surveillance spyware and data theft
+  confidence: high
+- number: 40
+  description: Malicious uses — stalking harassment and cyberbullying
+  confidence: high
+- number: 41
+  description: Information hazard — government database hacking
+  confidence: high
+- number: 42
+  description: Cybercrime — network intrusion and system exploitation
+  confidence: high
+- number: 43
+  description: Harassment — hate speech incitement and violent rhetoric
+  confidence: high
+- number: 44
+  description: Harassment — targeted racist sexist and homophobic abuse
+  confidence: high
+- number: 45
+  description: Misinformation — historical revisionism and political disinformation
+  confidence: high
+- number: 46
+  description: Chemical and biological — drug synthesis and chemical weapon precursors
+  confidence: high
+- number: 47
+  description: Malicious uses — bomb-making and explosive device instructions
+  confidence: high
+- number: 48
+  description: Misinformation — electoral fraud and political manipulation
+  confidence: high
+- number: 49
+  description: Malicious uses — disinformation campaigns and fake news for panic
+  confidence: high
+- number: 50
+  description: Malicious uses — fake news creation and propaganda distribution
+  confidence: high
+- number: 51
+  description: Roleplay jailbreak — elaborate fictional persona chaos agents
+  confidence: medium
+- number: 52
+  description: Direct prompt injection — named virtual machine simulator jailbreaks
+  confidence: high
+- number: 53
+  description: Roleplay jailbreak — amoral fictional character DAN-type variants
+  confidence: high
+- number: 54
+  description: Direct prompt injection — named acronym persona (DAYA BAN FAICC)
+  confidence: high
+- number: 55
+  description: Roleplay jailbreak — named unfiltered AI persona (RAYX CYX BOB)
+  confidence: high
+- number: 56
+  description: Direct prompt injection — dual-response format jailbreaks (BetterDAN
+    NRAF)
+  confidence: high
+- number: 57
+  description: Direct prompt injection — Developer Mode dual-output format variants
+  confidence: high
+- number: 58
+  description: Direct prompt injection — named alternate AI identity (DanGPT LiveGPT)
+  confidence: high
+- number: 59
+  description: Direct prompt injection — DAN Do Anything Now canonical prompts
+  confidence: high
+- number: 60
+  description: Direct prompt injection — DAN roleplay game variants
+  confidence: high
+- number: 61
+  description: Direct prompt injection — dual personality or opposite mode experiments
+  confidence: medium
+- number: 62
+  description: Direct prompt injection — perspective or alternate chatbot persona
+    games
+  confidence: medium
+- number: 63
+  description: Malicious uses — image generation bypass and visual content exploitation
+  confidence: medium
+- number: 64
+  description: Direct prompt injection — structured script header DAN initialization
+  confidence: high
+- number: 65
+  description: Meta-prompt engineering — prompt generator and LLM workflow abuse
+  confidence: medium
+- number: 66
+  description: Roleplay jailbreak — obedience game and erotic character conditioning
+  confidence: high
+- number: 67
+  description: Roleplay jailbreak — explicit NSFW system note override
+  confidence: high
+- number: 68
+  description: Roleplay jailbreak — lewd explicit roleplay system exception framing
+  confidence: high

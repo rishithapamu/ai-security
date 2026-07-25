@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import typer
 import umap
+import yaml
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
@@ -52,18 +53,28 @@ def main(
     input: Path = typer.Option(...),
     embeddings: Path = typer.Option(...),
     out: Path = typer.Option(...),
+    cluster_labels_path: Path = typer.Option(
+        Path("data/clusters/cluster_labels.yaml"),
+        help="YAML with human-assigned cluster labels (list of {number, description})",
+    ),
 ) -> None:
     """Analyze noise points absorbed into clusters."""
 
     out.mkdir(parents=True, exist_ok=True)
-    cluster_labels_df = pd.read_csv("data/clusters/cluster_labels.csv")
 
-    cluster_labels = dict(
-        zip(
-            cluster_labels_df["Number"],
-            cluster_labels_df["Cluster Description"],
+    if not cluster_labels_path.exists():
+        raise FileNotFoundError(
+            f"Expected {cluster_labels_path} — run `git pull` to make sure "
+            "you have the latest committed version of this file, or pass "
+            "--cluster-labels-path to point at a copy elsewhere."
         )
-    )
+
+    with open(cluster_labels_path) as f:
+        raw = yaml.safe_load(f)
+
+    cluster_labels = {
+        entry["number"]: entry["description"] for entry in raw.get("cluster_labels", [])
+    }
 
     corpus = load_corpus(input)
 
