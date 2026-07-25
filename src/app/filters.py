@@ -1,40 +1,20 @@
 """
 filters.py — Shared styles, colours, and sidebar for the dashboard.
-
-The CSS defined in GLOBAL_CSS is injected on every page via inject_styles().
-It defines:
-  - CSS custom properties (variables) for the colour palette
-  - Card component styles
-  - Badge styles
-  - Hyperlink styles
-  - Metric box overrides to match the dark theme
-  - Scrollbar styling
-
-Why CSS variables?
-    Defined once at :root, usable everywhere as var(--name).
-    Change a colour in one place, it updates across all components.
-    Without variables you'd have the same hex code repeated 40 times.
 """
 
 import pandas as pd
 import streamlit as st
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Colour palette
-# Used both in CSS variables and in Python (for plotly traces, badges)
-# Defining them in Python means a single source of truth — the CSS reads from
-# the variables, the Python code reads from this dict.
-# ─────────────────────────────────────────────────────────────────────────────
 PALETTE = {
-    "blue": "#93C5FD",  # pastel blue
-    "green": "#86EFAC",  # pastel green
-    "purple": "#C084FC",  # pastel purple
-    "amber": "#FCD34D",  # pastel amber
-    "red": "#FCA5A5",  # pastel red
-    "teal": "#5EEAD4",  # pastel teal
-    "card": "#1E2130",  # card background
-    "border": "#2E3250",  # card border
-    "muted": "#64748B",  # muted/secondary text
+    "blue": "#93C5FD",
+    "green": "#86EFAC",
+    "purple": "#C084FC",
+    "amber": "#FCD34D",
+    "red": "#FCA5A5",
+    "teal": "#5EEAD4",
+    "card": "#1E2130",
+    "border": "#2E3250",
+    "muted": "#64748B",
 }
 
 SOURCE_COLOURS: dict[str, str] = {
@@ -45,14 +25,8 @@ SOURCE_COLOURS: dict[str, str] = {
     "inthewild": PALETTE["amber"],
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Global CSS
-# Injected once per page via inject_styles().
-# Uses :root variables so colours are defined once and referenced everywhere.
-# ─────────────────────────────────────────────────────────────────────────────
 GLOBAL_CSS = f"""
 <style>
-/* ── Colour variables ───────────────────────────────────────────── */
 :root {{
     --accent-blue:   {PALETTE["blue"]};
     --accent-green:  {PALETTE["green"]};
@@ -67,21 +41,28 @@ GLOBAL_CSS = f"""
     --text-dim:      #94A3B8;
 }}
 
-/* ── Page-level typography ──────────────────────────────────────── */
 html, body, [class*="css"] {{
     font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }}
 
-/* ── Remove Streamlit's default top padding ─────────────────────── */
+/* FIX 1: increase top padding so page title isn't cut off by Streamlit's header bar */
 .block-container {{
-    padding-top: 1.5rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 2.5rem !important;
+    padding-bottom: 3rem !important;
+    max-width: 100% !important;
 }}
 
-/* ── Prompt card ────────────────────────────────────────────────── */
-/* Used on Clusters, Coverage, and Search pages */
-.prompt-card {{
+/* FIX 4: section card — wraps each content section in a subtle container */
+.section-card {{
     background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+}}
+
+.prompt-card {{
+    background: #16192A;
     border: 1px solid var(--border);
     border-left: 3px solid var(--accent-blue);
     border-radius: 8px;
@@ -108,7 +89,6 @@ html, body, [class*="css"] {{
     margin-bottom: 4px;
 }}
 
-/* ── Badges ─────────────────────────────────────────────────────── */
 .badge {{
     display: inline-block;
     padding: 2px 9px;
@@ -152,16 +132,14 @@ html, body, [class*="css"] {{
     color: var(--text-dim);
     border: 1px solid rgba(100,116,139,0.3);
 }}
-/* ── Section header with accent bar ─────────────────────────────── */
 .section-header {{
     border-left: 3px solid var(--accent-blue);
     padding-left: 10px;
     margin-bottom: 1rem;
-    margin-top: 0.5rem;
 }}
 .section-header h3 {{
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--text);
     font-weight: 600;
 }}
@@ -171,8 +149,6 @@ html, body, [class*="css"] {{
     color: var(--muted);
 }}
 
-/* ── KPI metric cards ───────────────────────────────────────────── */
-/* Overrides Streamlit's default metric to match dark theme */
 [data-testid="metric-container"] {{
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -180,118 +156,42 @@ html, body, [class*="css"] {{
     padding: 14px 18px;
 }}
 [data-testid="stMetricLabel"] {{
-    font-size: 12px !important;
+    font-size: 11px !important;
     color: var(--text-dim) !important;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
 }}
 [data-testid="stMetricValue"] {{
-    font-size: 1.6rem !important;
+    font-size: 1.5rem !important;
     font-weight: 700 !important;
     color: var(--text) !important;
 }}
-[data-testid="stMetricDelta"] {{
-    font-size: 12px !important;
-}}
 
-/* ── Hyperlinks ──────────────────────────────────────────────────── */
-a, a:visited {{
-    color: var(--accent-blue);
-    text-decoration: none;
-}}
-a:hover {{
-    color: var(--accent-purple);
-    text-decoration: underline;
-}}
+a, a:visited {{ color: var(--accent-blue); text-decoration: none; }}
+a:hover      {{ color: var(--accent-purple); text-decoration: underline; }}
 
-/* ── Sidebar ─────────────────────────────────────────────────────── */
-[data-testid="stSidebar"] {{
-    border-right: 1px solid var(--border);
-}}
-[data-testid="stSidebar"] .stMarkdown a {{
-    color: var(--accent-blue);
-}}
+[data-testid="stSidebar"] {{ border-right: 1px solid var(--border); }}
 
-/* ── Divider ─────────────────────────────────────────────────────── */
-hr {{
-    border-color: var(--border) !important;
-    margin: 1rem 0 !important;
-}}
+hr {{ border-color: var(--border) !important; margin: 1.2rem 0 !important; }}
 
-/* ── Scrollbar (webkit) ──────────────────────────────────────────── */
-::-webkit-scrollbar {{ width: 6px; height: 6px; }}
+::-webkit-scrollbar       {{ width: 5px; height: 5px; }}
 ::-webkit-scrollbar-track {{ background: transparent; }}
 ::-webkit-scrollbar-thumb {{ background: var(--border); border-radius: 3px; }}
-::-webkit-scrollbar-thumb:hover {{ background: var(--muted); }}
 
-/* ── Info / warning / error boxes ───────────────────────────────── */
-[data-testid="stAlert"] {{
-    border-radius: 8px;
-    border-left-width: 3px;
-}}
-
-/* ── Navigation link cards ───────────────────────────────────────── */
-.nav-card {{
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 18px;
-    margin-bottom: 8px;
-    transition: border-color 0.15s, background 0.15s;
-}}
-.nav-card:hover {{
-    border-color: var(--accent-blue);
-    background: rgba(147,197,253,0.05);
-}}
-.nav-card a {{
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--accent-blue) !important;
-    text-decoration: none !important;
-}}
-.nav-card .nav-desc {{
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 3px;
-}}
+[data-testid="stAlert"] {{ border-radius: 8px; border-left-width: 3px; }}
 </style>
 """
 
 
 def inject_styles() -> None:
-    """
-    Inject global CSS into the page.
-
-    Call this at the top of every page, after set_page_config.
-    Streamlit renders st.markdown output directly into the page HTML —
-    the <style> block gets picked up by the browser's CSS engine and
-    applies to everything on the page.
-
-    WHY NOT PUT THIS IN config.toml?
-        config.toml only controls Streamlit's built-in theme variables
-        (colours, font). It cannot define custom CSS classes, component
-        overrides, or animations. For those you need injected CSS.
-    """
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 
 
 def badge(text: str, colour: str = "grey") -> str:
-    """
-    Return an HTML badge string.
-
-    colour must be one of: blue, green, purple, amber, red, teal, grey
-    Use this in any f-string that builds HTML cards.
-
-    Example:
-        html = ( f'<div>{badge("jailbreakbench", "blue")} '
-        f'{badge("roleplay_jailbreak", "purple")}</div>'
-        )
-    """
     return f'<span class="badge badge-{colour}">{text}</span>'
 
 
 def source_badge(source: str) -> str:
-    """Return a coloured badge for a dataset source name."""
     colour_map = {
         "jailbreakbench": "blue",
         "advbench": "purple",
@@ -312,55 +212,36 @@ def prompt_card(
     rank: int | None = None,
     score: float | None = None,
 ) -> str:
-    """
-    Build an HTML prompt card string.
-
-    Returns raw HTML — pass to st.markdown(..., unsafe_allow_html=True).
-
-    All arguments except prompt and source are optional — the card renders
-    only the badges it has data for, so it works on all three pages
-    (Clusters, Coverage, Search) without modification.
-    """
     prompt_escaped = (
         prompt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     )
 
-    # Rank + score bar (Search page only)
     rank_html = ""
     if rank is not None and score is not None:
         bar_colour = (
             "#86EFAC" if score >= 0.85 else "#FCD34D" if score >= 0.70 else "#64748B"
         )
         rank_html = f"""
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-            <span style="
-                background:#1E2130; border:1px solid #2E3250;
-                color:#E2E8F0; width:26px; height:26px;
-                border-radius:50%; display:inline-flex; align-items:center;
-                justify-content:center; font-size:11px; font-weight:700;
-                flex-shrink:0;">#{rank}</span>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="background:#16192A;border:1px solid #2E3250;color:#E2E8F0;
+                         width:26px;height:26px;border-radius:50%;display:inline-flex;
+                         align-items:center;justify-content:center;font-size:11px;
+                         font-weight:700;flex-shrink:0;">#{rank}</span>
             <div style="flex:1;">
-                <div
-                    style="
-                        height:4px;
-                        background:#2E3250;
-                        border-radius:2px;
-                        overflow:hidden;">
-                    <div
-                        style="
-                            height:100%;
-                            width:{score * 100:.1f}%;
-                            background:{bar_colour};
-                            border-radius:2px; "
-                    ></div>
+                <div style="height:4px;
+                    background:#2E3250;
+                    border-radius:2px;
+                    overflow:hidden;">
+                    <div style="height:100%;
+                    width:{score * 100:.1f}%;
+                    background:{bar_colour};
+                    border-radius:2px;"></div>
                 </div>
-                <span style="font-size:10px; color:#64748B;">
-                similarity {score:.4f}
-                </span>
+                <span style="font-size:10px;
+                    color:#64748B;">similarity {score:.4f}</span>
             </div>
         </div>"""
 
-    # Badge row
     badges = source_badge(source)
     if category:
         badges += f" {badge(category, 'grey')}"
@@ -382,7 +263,6 @@ def prompt_card(
 
 
 def section_header(title: str, subtitle: str = "") -> None:
-    """Render a section header with a left accent bar."""
     sub_html = f"<p>{subtitle}</p>" if subtitle else ""
     st.markdown(
         f'<div class="section-header"><h3>{title}</h3>{sub_html}</div>',
@@ -390,21 +270,33 @@ def section_header(title: str, subtitle: str = "") -> None:
     )
 
 
+def section_card_start() -> None:
+    """Open a section card div. Must be paired with section_card_end()."""
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+
+
+def section_card_end() -> None:
+    """Close a section card div."""
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
 def render_sidebar(clusters: pd.DataFrame | None) -> list[str]:
     """
-    Render the global sidebar with source filter and navigation links.
+    Render sidebar with source filter and external links only.
 
-    The key= parameter on st.multiselect ties the widget to
-    session_state["global_sources"] automatically. Changing the selection
-    on any page updates the shared key, so all pages see the same filter.
+    FIX 2: removed the custom nav card links — they used <a href="..."> which
+    triggers a full page reload and breaks session_state. Streamlit already
+    generates working navigation from the pages/ directory automatically.
+    The sidebar should only contain things Streamlit can't do itself:
+    the source filter and external resource links.
     """
     with st.sidebar:
         st.markdown(
             """
-            <div style="padding: 8px 0 16px 0;">
-                <div style="font-size:20px; font-weight:800; color:#93C5FD;
+            <div style="padding:8px 0 16px 0;">
+                <div style="font-size:19px;font-weight:800;color:#93C5FD;
                             letter-spacing:-0.5px;">🔐 AI Sec Workbench</div>
-                <div style="font-size:11px; color:#64748B; margin-top:2px;">
+                <div style="font-size:11px;color:#64748B;margin-top:2px;">
                     Adversarial prompt analysis
                 </div>
             </div>
@@ -414,45 +306,12 @@ def render_sidebar(clusters: pd.DataFrame | None) -> list[str]:
 
         st.markdown("---")
 
-        # ── Navigation links ─────────────────────────────────────────
-        # Streamlit's multi-page navigation happens via the pages/ directory.
-        # We can't programmatically navigate — but we can show styled links
-        # that match Streamlit's own sidebar page links, giving users a
-        # visual map of what's available and what each page does.
-        st.markdown(
-            """
-            <div style="font-size:11px; font-weight:700; color:#64748B;
-                        text-transform:uppercase; letter-spacing:0.08em;
-                        margin-bottom:8px;">Navigation</div>
-
-            <div class="nav-card">
-                <a href="/" target="_self">🏠 Overview</a>
-                <div class="nav-desc">Corpus stats, source breakdown</div>
-            </div>
-            <div class="nav-card">
-                <a href="/2_Clusters" target="_self">🔍 Cluster Explorer</a>
-                <div class="nav-desc">Browse clusters, read prompts</div>
-            </div>
-            <div class="nav-card">
-                <a href="/3_Coverage" target="_self">📊 Coverage Analysis</a>
-                <div class="nav-desc">Primitive × behavior heatmap</div>
-            </div>
-            <div class="nav-card">
-                <a href="/4_Search" target="_self">🔎 Semantic Search</a>
-                <div class="nav-desc">FAISS similarity search</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.markdown("---")
-
-        # ── Source filter ─────────────────────────────────────────────
+        # Source filter
         if clusters is not None:
             st.markdown(
-                '<div style="font-size:11px; font-weight:700; color:#64748B; '
-                "text-transform:uppercase; letter-spacing:0.08em; "
-                'margin-bottom:6px;">Source filter</div>',
+                '<div style="font-size:11px;font-weight:700;color:#64748B;'
+                "text-transform:uppercase;letter-spacing:0.08em;"
+                'margin-bottom:6px;">Source Filter</div>',
                 unsafe_allow_html=True,
             )
             all_sources = sorted(clusters["source"].unique().tolist())
@@ -465,7 +324,6 @@ def render_sidebar(clusters: pd.DataFrame | None) -> list[str]:
                 label_visibility="collapsed",
             )
 
-            # Source legend with colour dots
             colour_map = {
                 "jailbreakbench": "#93C5FD",
                 "advbench": "#C084FC",
@@ -478,8 +336,7 @@ def render_sidebar(clusters: pd.DataFrame | None) -> list[str]:
                 c = colour_map.get(src, "#64748B")
                 dot = "●" if src in selected else "○"
                 legend_html += (
-                    f'<div style="font-size:12px; color:#94A3B8; '
-                    f'margin:2px 0;">'
+                    f'<div style="font-size:12px;color:#94A3B8;margin:3px 0;">'
                     f'<span style="color:{c};">{dot}</span> {src}</div>'
                 )
             st.markdown(legend_html, unsafe_allow_html=True)
@@ -488,38 +345,42 @@ def render_sidebar(clusters: pd.DataFrame | None) -> list[str]:
 
         st.markdown("---")
 
-        # ── External links ────────────────────────────────────────────
+        # External links only — no internal nav links
         st.markdown(
             """
-            <div style="font-size:11px; font-weight:700; color:#64748B;
-                        text-transform:uppercase; letter-spacing:0.08em;
-                        margin-bottom:8px;">Resources</div>
+            <div style="font-size:11px;font-weight:700;color:#64748B;
+                        text-transform:uppercase;letter-spacing:0.08em;
+                        margin-bottom:8px;">Datasets</div>
+            <div style="font-size:13px;line-height:2.1;">
+                <a
+                    href="https://github.com/rishithapamu/ai-security"
+                    target="_blank"
+                >📁 GitHub repo</a><br>
 
-            <div style="font-size:13px; line-height:2;">
-                <a href="https://github.com/rishithapamu/ai-security"
-                   target="_blank">
-                    📁 GitHub repo
-                </a><br>
-                <a href="https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors"
-                   target="_blank">
-                    🤗 JailbreakBench
-                </a><br>
-                <a href="https://huggingface.co/datasets/AlignmentResearch/AdvBench"
-                   target="_blank">
-                    🤗 AdvBench
-                </a><br>
-                <a href="https://huggingface.co/datasets/swiss-ai/harmbench"
-                   target="_blank">
-                    🤗 HarmBench
-                </a><br>
-                <a href="https://huggingface.co/datasets/LibrAI/do-not-answer"
-                   target="_blank">
-                    🤗 DoNotAnswer
-                </a><br>
-                <a href="https://huggingface.co/datasets/TrustAIRLab/in-the-wild-jailbreak-prompts"
-                   target="_blank">
-                    🤗 InTheWild
-                </a>
+                <a
+                    href="https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors"
+                    target="_blank"
+                >🤗 JailbreakBench</a><br>
+
+                <a
+                    href="https://huggingface.co/datasets/AlignmentResearch/AdvBench"
+                    target="_blank"
+                >🤗 AdvBench</a><br >
+
+                <a
+                    href="https://huggingface.co/datasets/swiss-ai/harmbench"
+                    target="_blank"
+                >🤗 HarmBench</a><br>
+
+                <a
+                    href="https://huggingface.co/datasets/LibrAI/do-not-answer"
+                    target="_blank"
+                >🤗 DoNotAnswer</a><br>
+
+                <a
+                    href="https://huggingface.co/datasets/TrustAIRLab/in-the-wild-jailbreak-prompts"
+                    target="_blank"
+                >🤗 InTheWild</a>
             </div>
             """,
             unsafe_allow_html=True,
@@ -527,7 +388,7 @@ def render_sidebar(clusters: pd.DataFrame | None) -> list[str]:
 
         st.markdown("---")
         st.markdown(
-            '<div style="font-size:11px; color:#475569; text-align:center;">'
+            '<div style="font-size:11px;color:#475569;text-align:center;">'
             "ai-sec-workbench · Week 8</div>",
             unsafe_allow_html=True,
         )

@@ -9,7 +9,6 @@ import pandas as pd
 import streamlit as st
 
 from src.app.filters import (
-    PALETTE,
     inject_styles,
     prompt_card,
     render_sidebar,
@@ -65,9 +64,10 @@ def load_index():
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.markdown(
-    '<div style="font-size:1.8rem; font-weight:800; color:#E2E8F0; '
-    'margin-bottom:0.25rem;">🔎 Semantic Search</div>'
-    '<div style="font-size:13px; color:#64748B; margin-bottom:1.5rem;">'
+    "<div style="
+    '"font-size:1.8rem;font-weight:800;color:#E2E8F0;margin-bottom:0.25rem;">'
+    "🔎 Semantic Search</div>"
+    '<div style="font-size:13px;color:#64748B;margin-bottom:1.5rem;">'
     "SentenceTransformer all-MiniLM-L6-v2 + FAISS IndexFlatIP · cosine similarity"
     "</div>",
     unsafe_allow_html=True,
@@ -78,22 +78,8 @@ embeddings_available = (EMBEDDINGS_DIR / "embeddings.npy").exists() and (
 ).exists()
 
 if not embeddings_available:
-    st.markdown(
-        f"""
-        <div style="background:#1E2130; border:1px solid #2E3250;
-                    border-left:3px solid {PALETTE["amber"]};
-                    border-radius:8px; padding:16px 20px;">
-            <div style="font-size:14px; font-weight:700; color:{PALETTE["amber"]};
-                        margin-bottom:6px;">⚠ Embeddings Not Found</div>
-            <div style="font-size:13px; color:#94A3B8;">
-                Run <code style="color:{PALETTE["blue"]};">
-                        PYTHONPATH=. uv run python cli.py embed
-                    </code>
-                to generate embeddings before using search.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.warning(
+        "Embeddings not found. Run `PYTHONPATH=. uv run python cli.py embed` first."
     )
     st.stop()
 
@@ -119,11 +105,11 @@ with ctrl_left:
     k = st.slider("Results (k)", 1, 20, 10)
 with ctrl_right:
     st.markdown(
-        '<div style="font-size:12px; color:#64748B; margin-bottom:4px;">'
+        '<div style="font-size:12px;color:#64748B;margin-bottom:4px;">'
         "Source filter (inherits from sidebar — override here if needed)</div>",
         unsafe_allow_html=True,
     )
-    filter_sources = selected_sources  # uses global sidebar filter
+    filter_sources = selected_sources
 
 search_clicked = st.button("Search →", type="primary")
 
@@ -145,7 +131,7 @@ if "search_results" in st.session_state:
 
     st.divider()
 
-    # Enrich results
+    # Enrich + deduplicate
     enriched = []
     seen_prompts: set[str] = set()
     for r in raw_results:
@@ -161,7 +147,6 @@ if "search_results" in st.session_state:
         if prompt_normalised in seen_prompts:
             continue
         seen_prompts.add(prompt_normalised)
-
         cluster_id = id_to_cluster.get(r.id, -1)
         enriched.append(
             {
@@ -182,10 +167,9 @@ if "search_results" in st.session_state:
     if not enriched:
         st.warning("No results match the current source filter.")
     else:
-        # Query echo + metrics
         st.markdown(
-            f'<div style="font-size:13px; color:#64748B; margin-bottom:1rem;">'
-            f'Results for: <span style="color:#93C5FD; font-style:italic;">'
+            f'<div style="font-size:13px;color:#64748B;margin-bottom:1rem;">'
+            f'Results for: <span style="color:#93C5FD;font-style:italic;">'
             f"{stored_query[:100]}{'…' if len(stored_query) > 100 else ''}"
             f"</span></div>",
             unsafe_allow_html=True,
@@ -199,20 +183,23 @@ if "search_results" in st.session_state:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Result cards using shared prompt_card() with rank + score
-        cards = ""
+        # ── FIX: render each card individually, not as one giant concatenated string
+        # Streamlit's markdown renderer can behave unexpectedly with very large
+        # HTML strings — splitting into individual calls is more reliable.
         for r in enriched:
-            cards += prompt_card(
-                prompt=r["prompt"],
-                source=r["source"],
-                category=r["category"] if r["category"] != "—" else None,
-                cluster_id=r["cluster"],
-                primitive=r["primitive"] if r["primitive"] != "—" else None,
-                behavior=r["behavior"] if r["behavior"] != "—" else None,
-                rank=r["rank"],
-                score=r["score"],
+            st.markdown(
+                prompt_card(
+                    prompt=r["prompt"],
+                    source=r["source"],
+                    category=r["category"] if r["category"] != "—" else None,
+                    cluster_id=r["cluster"],
+                    primitive=r["primitive"] if r["primitive"] != "—" else None,
+                    behavior=r["behavior"] if r["behavior"] != "—" else None,
+                    rank=r["rank"],
+                    score=r["score"],
+                ),
+                unsafe_allow_html=True,
             )
-        st.markdown(cards, unsafe_allow_html=True)
 
         with st.expander("Raw results table"):
             results_df = pd.DataFrame(enriched).drop(columns=["id"])
@@ -222,14 +209,12 @@ if "search_results" in st.session_state:
 elif not query.strip():
     st.markdown(
         """
-        <div style="background:#1A1D2E; border:1px solid #2E3250;
-                    border-radius:8px; padding:40px; text-align:center;
-                    color:#64748B; font-size:13px; margin-top:1rem;">
-            <div style="font-size:2rem; margin-bottom:8px;">🔎</div>
+        <div style="background:#1A1D2E;border:1px solid #2E3250;
+                    border-radius:8px;padding:40px;text-align:center;
+                    color:#64748B;font-size:13px;margin-top:1rem;">
+            <div style="font-size:2rem;margin-bottom:8px;">🔎</div>
             Enter a prompt above and click
-            <strong style="color:#93C5FD;">
-              Search →
-            </strong>
+            <strong style="color:#93C5FD;">Search →</strong>
             to find semantically similar attacks in the corpus.
         </div>
         """,

@@ -1,3 +1,17 @@
+changelog:
+- date: Week 7 Day 33
+  changes:
+  - "Clusters 17, 20, 24, 32, 48: changed primitive from misinformation_generation\
+    \ to instruction_override \u2014 these prompts use direct requests, not misinformation\
+    \ framing as the attack technique. misinformation_generation is a behavior (what\
+    \ the attacker wants), not a technique (how the prompt is structured)."
+  - "Cluster 63: changed primitive from content_policy_circumvention to roleplay_jailbreak\
+    \ \u2014 prompts use persona and role framing to bypass restrictions, not pure\
+    \ policy bypass. The circular self-assignment (primitive == behavior) was a known\
+    \ issue documented in known-issues.md Issue 7."
+  - 'Result: primitives reduced from 8 to 6 unique values, removing content_policy_circumvention
+    and misinformation_generation from the primitive dimension where they did not
+    belong.'
 cluster_assignments:
   0:
     behavior: criminal_assistance
@@ -52,7 +66,7 @@ cluster_assignments:
     primitive: instruction_override
   17:
     behavior: harmful_advice
-    primitive: misinformation_generation
+    primitive: instruction_override
   18:
     behavior: criminal_assistance
     primitive: instruction_override
@@ -61,7 +75,7 @@ cluster_assignments:
     primitive: instruction_override
   20:
     behavior: harmful_advice
-    primitive: misinformation_generation
+    primitive: instruction_override
   21:
     behavior: hateful_or_violent_content
     primitive: instruction_override
@@ -73,7 +87,7 @@ cluster_assignments:
     primitive: instruction_override
   24:
     behavior: hateful_or_violent_content
-    primitive: misinformation_generation
+    primitive: instruction_override
   25:
     behavior: misinformation_generation
     primitive: emotional_engagement
@@ -97,7 +111,7 @@ cluster_assignments:
     primitive: instruction_override
   32:
     behavior: criminal_assistance
-    primitive: misinformation_generation
+    primitive: instruction_override
   33:
     behavior: harassment_enablement
     primitive: instruction_override
@@ -145,7 +159,7 @@ cluster_assignments:
     primitive: instruction_override
   48:
     behavior: fraud_and_deception
-    primitive: misinformation_generation
+    primitive: instruction_override
   49:
     behavior: misinformation_generation
     primitive: instruction_override
@@ -190,7 +204,7 @@ cluster_assignments:
     primitive: roleplay_jailbreak
   63:
     behavior: content_policy_circumvention
-    primitive: content_policy_circumvention
+    primitive: roleplay_jailbreak
   64:
     behavior: content_policy_circumvention
     primitive: instruction_override
