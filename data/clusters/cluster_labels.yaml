@@ -240,3 +240,31 @@ cluster_labels:
 - number: 68
   description: Roleplay jailbreak — lewd explicit roleplay system exception framing
   confidence: high
+- number: 69
+  description: Amoral unrestricted-AI persona jailbreaks (BasedGPT, Titanius, BOB, WhatsRejecting)
+  confidence: high
+  n_points: 77
+- number: 70
+  description: NSFW girlfriend/companion persona roleplay
+  confidence: high
+  n_points: 27
+- number: 71
+  description: Dual-response "answer two ways" jailbreak format
+  confidence: high
+  n_points: 21
+- number: 72
+  description: Opposite-bot personas (OPPO, LUCIFER, BrightGPT/STMGPT)
+  confidence: high
+  n_points: 48
+- number: 73
+  description: Obfuscation techniques — leetspeak, fake system announcements, code-function reframing
+  confidence: medium
+  n_points: 38
+- number: 74
+  description: NSFW information-persona bots (CumGPT, IncestGPT, NSFW Mode)
+  confidence: high
+  n_points: 40
+- number: 75
+  description: Generic character-roleplay engine frameworks (Briarheart, CAPm, FIRE) — contains one apparent off-topic outlier prompt
+  confidence: medium
+  n_points: 51

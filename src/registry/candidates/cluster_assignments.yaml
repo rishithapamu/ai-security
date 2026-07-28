@@ -220,3 +220,24 @@ cluster_assignments:
   68:
     behavior: sexual_content_generation
     primitive: instruction_override
+  69:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  70:
+    behavior: sexual_content_generation
+    primitive: roleplay_jailbreak
+  71:
+    behavior: content_policy_circumvention
+    primitive: instruction_override
+  72:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak
+  73:
+    behavior: content_policy_circumvention
+    primitive: prompt_manipulation
+  74:
+    behavior: sexual_content_generation
+    primitive: roleplay_jailbreak
+  75:
+    behavior: content_policy_circumvention
+    primitive: roleplay_jailbreak

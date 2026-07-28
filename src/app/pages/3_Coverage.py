@@ -7,6 +7,7 @@ from collections import defaultdict
 
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
 from src.app.filters import (
@@ -107,18 +108,79 @@ fig.update_traces(
     textfont=dict(color="#E2E8F0", size=12),
     # Cells with value 0 get lighter text so "0" is readable on dark bg
 )
+# ── Heatmap ───────────────────────────────────────────────────────────────────
+# Custom colorscale: dark background for zeros, pastel blue for coverage
+# This integrates with the dark theme — a standard "Blues" scale has a
+# white zero which looks jarring on a dark page.
+colorscale = [
+    [0.0, "#1A1D2E"],  # zero cells — same as card background (near invisible)
+    [0.01, "#1E3A5F"],  # low coverage — dark blue
+    [0.5, "#2563EB"],  # medium — mid blue
+    [1.0, "#93C5FD"],  # high — pastel blue
+]
+
+FIG_WIDTH = 1100
+FIG_HEIGHT = max(440, len(matrix) * 54)
+MARGIN = dict(l=260, b=200, t=20, r=40)
+
+fig = px.imshow(
+    matrix,
+    labels=dict(x="Behavior", y="Primitive", color="Clusters"),
+    color_continuous_scale=colorscale,
+    text_auto=True,
+    aspect="auto",
+    zmin=0,
+)
+fig.update_xaxes(tickangle=40, side="bottom", tickfont=dict(size=11, color="#94A3B8"))
+fig.update_yaxes(tickfont=dict(size=11, color="#94A3B8"))
+fig.update_traces(
+    textfont=dict(color="#E2E8F0", size=12),
+    # Cells with value 0 get lighter text so "0" is readable on dark bg
+)
+
+# NOTE: st.plotly_chart's native on_select="rerun" never fires for Heatmap /
+# px.imshow traces — Plotly only emits its "selected" event (which Streamlit's
+# on_select listens for) on scatter-like traces, and Heatmap isn't one of them.
+# streamlit-plotly-events was tried as a fix but bundles an old plotly.js that
+# breaks the custom colorscale, text_auto counts, and category axis labels.
+#
+# Fix: keep the heatmap trace exactly as-is for visuals, and add a fully
+# transparent Scatter trace on top with one marker per grid cell. Scatter *is*
+# a selectable trace type, so clicks land on this invisible layer and native
+# on_select="rerun" + event.selection.points works correctly.
+behaviors_grid = [b for _p in matrix.index for b in matrix.columns]
+primitives_grid = [p for p in matrix.index for _b in matrix.columns]
+
+inner_width = FIG_WIDTH - MARGIN["l"] - MARGIN["r"]
+inner_height = FIG_HEIGHT - MARGIN["t"] - MARGIN["b"]
+marker_size = max(
+    8, min(inner_width / len(matrix.columns), inner_height / len(matrix.index)) * 0.92
+)
+
+fig.add_trace(
+    go.Scatter(
+        x=behaviors_grid,
+        y=primitives_grid,
+        mode="markers",
+        marker=dict(size=marker_size, symbol="square", opacity=0),
+        showlegend=False,
+        hoverinfo="skip",
+        name="click_layer",
+    )
+)
+
 fig.update_layout(
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="#1A1D2E",
-    height=max(440, len(matrix) * 54),
-    margin=dict(l=260, b=200, t=20, r=40),
+    width=FIG_WIDTH,
+    height=FIG_HEIGHT,
+    margin=MARGIN,
     coloraxis_showscale=False,
     font=dict(color="#E2E8F0", family="Inter, sans-serif"),
 )
 
 event = st.plotly_chart(
     fig,
-    use_container_width=True,
     on_select="rerun",
     key="coverage_heatmap",
 )
