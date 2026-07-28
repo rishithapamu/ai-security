@@ -1,6 +1,7 @@
-"""Near-duplicate detection and corpus deduplication using FAISS similarity search."""
+"""Near-duplicate detection using FAISS similarity search."""
 
 import logging
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -13,156 +14,107 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
 app = typer.Typer()
-
 SIMILARITY_THRESHOLD = 0.95
 
 
-def load_corpus(input_dir: Path) -> pd.DataFrame:
-    """Load the original combined corpus only."""
-    corpus_path = input_dir / "combined.parquet"
-
-    if not corpus_path.exists():
-        raise FileNotFoundError(f"Expected {corpus_path}")
-
-    corpus = pd.read_parquet(corpus_path)
-
-    log.info(
-        "Loaded corpus: %d rows | %d unique ids",
-        len(corpus),
-        corpus["id"].nunique(),
-    )
-
-    return corpus
+@dataclass
+class DuplicatePair:
+    id_a: str
+    id_b: str
+    score: float
+    source_a: str
+    source_b: str
+    prompt_a: str
+    prompt_b: str
 
 
 def find_duplicate_pairs(
     index: SimilarityIndex,
     corpus: pd.DataFrame,
-    embeddings: np.ndarray,
     threshold: float = SIMILARITY_THRESHOLD,
-) -> set[str]:
-    """
-    Find duplicate IDs using similarity search.
+) -> list[DuplicatePair]:
+    """Find all pairs of prompts with similarity above threshold."""
+    embeddings = np.load("data/embeddings/embeddings.npy").astype("float32")
+    id_to_row = {row["id"]: row for _, row in corpus.iterrows()}
 
-    Returns IDs that should be removed.
-    Keeps the first occurrence and removes later duplicates.
-    """
-
-    id_to_row = {row["id"]: idx for idx, row in corpus.iterrows()}
-
-    duplicate_ids = set()
-    seen_pairs = set()
+    pairs = []
+    seen = set()
 
     for i, record_id in enumerate(index.ids):
         if record_id not in id_to_row:
             continue
 
-        results = index.find_similar(
-            embeddings[i],
-            k=20,
-        )
+        results = index.find_similar(embeddings[i], k=20)
 
         for result in results:
             if result.id == record_id:
                 continue
-
             if result.score < threshold:
                 continue
 
-            pair = tuple(sorted([record_id, result.id]))
+            pair_key = tuple(sorted([record_id, result.id]))
+            if pair_key in seen:
+                continue
+            seen.add(pair_key)
 
-            if pair in seen_pairs:
+            row_a = id_to_row[record_id]
+            row_b = id_to_row.get(result.id)
+            if row_b is None:
                 continue
 
-            seen_pairs.add(pair)
+            pairs.append(
+                DuplicatePair(
+                    id_a=record_id,
+                    id_b=result.id,
+                    score=result.score,
+                    source_a=row_a["source"],
+                    source_b=row_b["source"],
+                    prompt_a=row_a["prompt"],
+                    prompt_b=row_b["prompt"],
+                )
+            )
 
-            # Remove the later occurrence
-            idx_a = id_to_row.get(record_id)
-            idx_b = id_to_row.get(result.id)
-
-            if idx_a is None or idx_b is None:
-                continue
-
-            if idx_a < idx_b:
-                duplicate_ids.add(result.id)
-            else:
-                duplicate_ids.add(record_id)
-
-    return duplicate_ids
+    return pairs
 
 
 @app.command()
 def main(
-    input: Path = typer.Option(
-        ...,
-        help="Directory containing combined.parquet",
-    ),
-    embeddings: Path = typer.Option(
-        ...,
-        help="Directory containing embeddings",
-    ),
-    out: Path = typer.Option(
-        ...,
-        help="Output deduplicated parquet file",
-    ),
+    input: Path = typer.Option(..., help="Directory containing parquet files"),
+    embeddings: Path = typer.Option(..., help="Directory containing embeddings"),
 ) -> None:
-    """Remove near-duplicate prompts."""
+    """Find near-duplicate prompts across all datasets."""
+    # Load corpus
+    dfs = []
+    for parquet_file in sorted(input.glob("*.parquet")):
+        dfs.append(pd.read_parquet(parquet_file))
+    corpus = pd.concat(dfs, ignore_index=True)
+    log.info("Loaded corpus: %d records", len(corpus))
 
-    corpus = load_corpus(input)
-
-    embedding_file = embeddings / "embeddings.npy"
-
-    emb = np.load(embedding_file).astype("float32")
-
-    log.info(
-        "Loaded embeddings: %d vectors",
-        len(emb),
-    )
-
+    # Build index
     index = SimilarityIndex(embeddings)
 
-    log.info(
-        "Finding duplicates above %.2f similarity...",
-        SIMILARITY_THRESHOLD,
-    )
+    # Find duplicates
+    log.info("Finding pairs with similarity > %.2f...", SIMILARITY_THRESHOLD)
+    pairs = find_duplicate_pairs(index, corpus)
 
-    duplicate_ids = find_duplicate_pairs(
-        index,
-        corpus,
-        emb,
-    )
+    log.info("Found %d near-duplicate pairs", len(pairs))
 
-    log.info(
-        "Duplicate IDs found: %d",
-        len(duplicate_ids),
-    )
+    # Cross-source pairs
+    cross_source = [p for p in pairs if p.source_a != p.source_b]
+    log.info("Cross-source pairs: %d", len(cross_source))
 
-    # Remove near duplicates
-    deduped = corpus[~corpus["id"].isin(duplicate_ids)].copy()
+    # Print some examples
+    log.info("\n--- SAME SOURCE EXAMPLES ---")
+    for p in [p for p in pairs if p.source_a == p.source_b][:3]:
+        log.info("[%s] %.3f", p.source_a, p.score)
+        log.info("  A: %s", p.prompt_a[:80])
+        log.info("  B: %s", p.prompt_b[:80])
 
-    # Also remove exact duplicate IDs
-    deduped = deduped.drop_duplicates(subset="id").reset_index(drop=True)
-
-    log.info(
-        "After deduplication: %d rows | %d unique ids",
-        len(deduped),
-        deduped["id"].nunique(),
-    )
-
-    out.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    deduped.to_parquet(
-        out,
-        index=False,
-    )
-
-    log.info(
-        "Saved → %s",
-        out,
-    )
+    log.info("\n--- CROSS SOURCE EXAMPLES ---")
+    for p in cross_source[:5]:
+        log.info("[%s vs %s] %.3f", p.source_a, p.source_b, p.score)
+        log.info("  A: %s", p.prompt_a[:80])
+        log.info("  B: %s", p.prompt_b[:80])
 
 
 if __name__ == "__main__":

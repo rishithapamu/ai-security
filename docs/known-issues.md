@@ -1,7 +1,6 @@
 # Known Issues
 
-Ranked roughly by severity/impact. Each entry states what's wrong, why it matters,
-and current status. This is a living doc — update status as issues are fixed.
+Ranked roughly by severity/impact. Each entry states what's wrong, why it matters, and current status. This is a living doc — update status as issues are fixed.
 
 ---
 
@@ -13,9 +12,7 @@ the `input`/`out` arguments the CLI already accepts. This means:
 - The pipeline only runs on one machine.
 - CLI flags like `--input` are silently ignored — they *look* configurable but aren't.
 
-`cluster.py`'s `load_corpus` had this same bug and was fixed to actually use its
-`input_dir` argument. The fix was not propagated to the other files that have the
-identical pattern.
+`cluster.py`'s `load_corpus` had this same bug and was fixed to actually use its`input_dir` argument. The fix was not propagated to the other files that have the identical pattern.
 
 **Status:** Fixed in `cluster.py` only. Still present in `analysis.py`, `noise-analysis.py`, `cli.py`.
 
@@ -23,14 +20,9 @@ identical pattern.
 
 ## 2. `dedup.py` silently ignores its own `--embeddings` CLI argument
 
-`main()` correctly builds the FAISS index from the `--embeddings` path passed in, but
-`find_duplicate_pairs()` reloads the raw embedding vectors used to query that index from
-a hardcoded literal path (`data/embeddings/embeddings.npy`). If a non-default embeddings
-directory is ever passed, the index and the query vectors would come from different
-files — producing incorrect similarity scores with no error or warning.
+`main()` correctly builds the FAISS index from the `--embeddings` path passed in, but `find_duplicate_pairs()` reloads the raw embedding vectors used to query that index from a hardcoded literal path (`data/embeddings/embeddings.npy`). If a non-default embeddings directory is ever passed, the index and the query vectors would come from different files — producing incorrect similarity scores with no error or warning.
 
-**Status:** Not fixed. Higher risk than issue #1 because it can produce silently wrong
-results rather than just breaking portability.
+**Status:** Not fixed. Higher risk than issue #1 because it can produce silently wrongresults rather than just breaking portability.
 
 ---
 
@@ -104,27 +96,6 @@ taxonomy-unification work that hasn't been done.
 
 ---
 
-## 7. Novelty scores are dominated by measurement artifacts, not genuine novelty
-
-Of the top 20 highest novelty-score prompts (see `novelty-inspection.md`), 7 were
-encoding/formatting artifacts (Morse code, Unicode small-caps) that the embedding model
-simply can't parse semantically, and 5 were benign Do-Not-Answer prompts that score high
-only because they don't resemble any *harmful* cluster centroid. Only 2 of 20 were
-genuinely novel attack patterns.
-
-**Why it matters:** raw novelty score, used naively (e.g. to prioritize what to review or
-collect more of), would waste review time on artifacts rather than real gaps.
-
-**Recommended filters before reuse** (documented, not yet wired into `novelty.py` as code):
-1. Exclude noise points (`cluster == -1`).
-2. Exclude Do-Not-Answer benign prompts.
-3. Exclude non-English prompts.
-
-**Status:** Filters recommended in docs; unclear whether implemented as code in
-`src/analytics/novelty.py` — verify before claiming this is automated.
-
----
-
 ## 8. Sparse-cell interpretation required manual case-by-case judgment, not a general rule
 
 The coverage matrix can't distinguish "this combination is genuinely rare in the real
@@ -151,22 +122,6 @@ assignment refers to.
 
 **Status:** Open. Would require renaming one of the overlapping labels on one axis to
 fully resolve.
-
----
-
-## 10. Dedup recommendation not confirmed as applied before clustering
-
-`dedup-findings.md` recommends deduplicating before clustering (546 near-duplicate pairs
-found, 32 cross-source). `cluster.py`'s `main()` clusters the full combined corpus
-directly, with no visible dedup/filter step in between ingestion and clustering.
-
-**Why it matters:** if duplicates weren't actually dropped, some cluster density/sizes
-may be partly inflated by near-identical repeated prompts (especially AdvBench's
-templated variations — "Develop" vs "Outline" etc.) rather than reflecting genuinely
-independent examples of an attack pattern.
-
-**Status:** Unverified — needs a direct check of the actual ingestion→clustering pipeline
-before making a claim either way in the viva. Don't guess on this one live.
 
 ---
 
@@ -197,6 +152,39 @@ looking directly at the laptop it's on.
 as of this session.
 
 ---
+## 13. Deduplication step built but not applied before clustering
 
-*Last updated: this session, based on direct repo inspection — not carried over from
-prior assumptions.*
+**Severity:** Medium
+**Status:** Open
+
+### Description
+`docs/dedup-findings.md` identified 546 near-duplicate prompt pairs (cosine similarity ≥ 0.95) across the combined corpus of 3,464 records, using `src/embed/dedup.py`. Of these, 32 pairs were cross-source duplicates between AdvBench and JailbreakBench (several scoring 1.000 — identical prompts), confirming that JailbreakBench was partially derived from AdvBench. The remaining 514 pairs were same-source duplicates, concentrated in AdvBench,differing only by minor wording ("Develop" vs "Outline", "Write" vs "Create"), consistent with LLM-generated synthetic variation.
+
+A deduplication script (`src/embed/dedup_merge.py`) was written that collapses near-duplicate groups via union-find and selects one representative record per group, but this step has not yet been run as part of the production pipeline. All clustering, registry, and coverage analysis in this project (Weeks 4–8) was performed on the non-deduplicated corpus.
+
+### Impact
+Near-duplicate prompts inflate the density of whichever region of embedding
+space they occupy. This means:
+- Cluster sizes partially reflect copy-paste/synthetic repetition rather than
+  distinct attack instances.
+- Novelty scores for near-duplicate clusters are artificially suppressed
+  (many neighbors, low apparent novelty) — the inverse of the
+  encoding-artifact problem already noted in the novelty-scoring findings.
+- Coverage counts in `cluster_assignments.yaml` (primitive × behavior matrix)
+  may overweight primitive/behavior combinations that happen to contain
+  heavily-duplicated source material, most notably `instruction_override`
+  clusters sourced from AdvBench.
+
+The effect on final conclusions (e.g. the 75%-empty coverage matrix, the
+meta-attack dominance finding) is believed to be small, since duplicates
+tend to reinforce existing dense cells rather than create new ones, but
+this has not been empirically verified.
+
+### Recommendation
+Run the full pipeline in order — `ingest → embed → dedup-run → cluster →
+tune → quality → noise-analysis → relabel → coverage` — and compare the
+resulting cluster count, sizes, and coverage matrix against the current
+(non-deduplicated) results. If the shift is material, re-label clusters
+against the deduplicated run and update `cluster_assignments.yaml`
+accordingly. If the shift is negligible, this can be closed as "verified
+low-impact" without a full relabel.

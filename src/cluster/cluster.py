@@ -14,13 +14,12 @@ app = typer.Typer()
 
 
 def load_corpus(input_dir: Path) -> pd.DataFrame:
-    combined = input_dir / "combined.parquet"
-    if not combined.exists():
-        raise FileNotFoundError(
-            f"Expected {combined} — run `uv run python cli.py ingest` first."
-        )
-    corpus = pd.read_parquet(combined)
-    log.info("Loaded %d records from %s", len(corpus), combined)
+    """Load corpus from the deduplicated parquet file."""
+    deduped = input_dir / "deduped.parquet"
+    if not deduped.exists():
+        raise FileNotFoundError(f"Expected {deduped} — run `make dedup-run` first.")
+    corpus = pd.read_parquet(deduped)
+    log.info("Loaded %d records from %s", len(corpus), deduped)
     return corpus
 
 
@@ -97,6 +96,10 @@ def align_embeddings(
     ids: list[str],
 ) -> tuple[pd.DataFrame, np.ndarray]:
     id_index_df = pd.DataFrame({"id": ids, "_emb_idx": range(len(ids))})
+
+    corpus = corpus.drop_duplicates("id").reset_index(drop=True)
+    id_index_df = id_index_df.drop_duplicates("id")
+
     merged = corpus.merge(id_index_df, on="id", how="inner")
 
     n_dropped = len(corpus) - len(merged)
@@ -109,6 +112,9 @@ def align_embeddings(
 
     aligned_corpus = merged.drop(columns=["_emb_idx"]).reset_index(drop=True)
     aligned_emb = emb[merged["_emb_idx"].values]
+
+    if len(aligned_corpus) != len(aligned_emb):
+        raise ValueError("Corpus and embeddings are misaligned")
 
     log.info("Aligned %d records with embeddings.", len(aligned_corpus))
     return aligned_corpus, aligned_emb
