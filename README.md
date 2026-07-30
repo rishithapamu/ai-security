@@ -1,8 +1,8 @@
 ## ai-sec-workbench
 
-An end-to-end workflow that ingests, embeds, clusters, and analyzes adversarial prompts — the kind used to try to "jailbreak" AI chatbots — across five public red-teaming datasets, to find where public jailbreak research does and doesn't have coverage.
-
 A jailbreak, in this context, refers specifically to a prompt or sequence of prompts engineered to cause a model to bypass its own safety training and produce a response it would otherwise refuse.
+
+I designed a two-axis taxonomy — attack technique (primitive) and attacker objective (behavior) — and built the pipeline to ingest, embed, cluster, and label adversarial prompts (the kind used to try to "jailbreak" AI chatbots) against it, across five public red-teaming datasets, to find where public jailbreak research does and doesn't have coverage.
 
 ![Python 3.14](https://img.shields.io/badge/python-3.14-blue)
 ![uv](https://img.shields.io/badge/deps-uv-orange)
@@ -11,7 +11,7 @@ A jailbreak, in this context, refers specifically to a prompt or sequence of pro
 ## What This Found
 
 - **91% of the primitive × behavior coverage grid is empty.**
-Out of 247 possible (attack technique) × (attacker objective) combinations,    only 22 arevbacked by an actual cluster of real prompts. See [Coverage Analysis](#6-see-the-coverage-gaps) below.
+Out of 247 possible (attack technique) × (attacker objective) combinations, only 22 arevbacked by an actual cluster of real prompts. See [Coverage Analysis](#6-see-the-coverage-gaps) below.
 - **The corpus is dominated by "meta-attacks."**
 `content_policy_circumvention`(prompts whose only goal is unlocking the model, not doing anything specific once unlocked) accounts for the single largest behavior group. The datasets studied know a lot about jailbreak framing and comparatively little about what an attacker does *after* the jailbreak succeeds.
 - **Emotional-manipulation attacks are almost invisible in academic datasets.**
